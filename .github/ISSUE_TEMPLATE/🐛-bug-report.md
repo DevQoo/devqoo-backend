@@ -1,7 +1,7 @@
 ---
 name: "\U0001F41B Bug report"
 about: 버그 이슈를 생성해주세요.
-title: ''
+title: "[BUG]"
 labels: ''
 assignees: ''
 
