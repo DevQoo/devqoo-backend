@@ -3,7 +3,7 @@ package com.devqoo.backend.category.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.devqoo.backend.category.entity.Category;
-import com.devqoo.backend.common.JpaAuditingConfiguration;
+import com.devqoo.backend.common.config.JpaAuditingConfiguration;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
