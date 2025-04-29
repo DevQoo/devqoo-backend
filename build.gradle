@@ -32,6 +32,11 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'com.h2database:h2'
 
+    // AWS
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.3.0")
+
+    implementation 'io.awspring.cloud:spring-cloud-aws-s3'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
