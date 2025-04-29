@@ -1,4 +1,4 @@
-package com.devqoo.backend.category.entity;
+package com.devqoo.backend.user.entity;
 
 import com.devqoo.backend.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -14,19 +14,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "users")
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Category extends BaseTimeEntity {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
-    private Long id;
+    @Column(name = "user_id")
+    private Long userId;
 
-    @Column(name = "category_name", nullable = false, length = 50)
-    private String categoryName;
+    @Column(name = "nickname", nullable = false, length = 20)
+    private String nickname;
+
+    @Column(name = "email", nullable = false, length = 50)
+    private String email;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "profile_url")
+    private String profileUrl;
+
+    @Column(name = "role", nullable = false, length = 10)
+    private String role;
 
 }

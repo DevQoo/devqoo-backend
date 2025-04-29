@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.common.config.JpaAuditingConfiguration;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,26 +13,30 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
-@Import({JpaAuditingConfiguration.class})
+@Import(JpaAuditingConfiguration.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 class CategoryRepositoryTest {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @DisplayName("카테고리 저장 조회 테스트")
+    @DisplayName("카테고리를 저장하면, 저장된 값을 ID로 조회할 수 있다.")
     @Test
-    void given_categoryName_save_when_find_then_return_saved_category() {
+    void givenCategoryName_whenSaving_thenCanRetrieveById() {
         // given
-        Category savedCategory = categoryRepository.save(new Category("질문 게시판"));
-        entityManager.flush();
+        String categoryName = "질문 게시판";
+        Category category = Category.builder()
+            .categoryName(categoryName)
+            .build();
+
         // when
-        Category category = categoryRepository.findById(savedCategory.getId()).orElse(null);
+        Category saved = categoryRepository.save(category);
+        Category found = categoryRepository.findById(saved.getId()).orElse(null);
+
         // then
-        assertThat(category).isNotNull();
+        assertThat(found).isNotNull();
+        assertThat(found.getId()).isEqualTo(saved.getId());
+        assertThat(found.getCategoryName()).isEqualTo(categoryName);
     }
 }

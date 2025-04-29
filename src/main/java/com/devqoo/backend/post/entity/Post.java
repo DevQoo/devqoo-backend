@@ -1,4 +1,4 @@
-package com.devqoo.backend.category.entity;
+package com.devqoo.backend.post.entity;
 
 import com.devqoo.backend.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -14,19 +14,32 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "posts")
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Category extends BaseTimeEntity {
+public class Post extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
-    private Long id;
+    @Column(name = "post_id")
+    private Long postId;
 
-    @Column(name = "category_name", nullable = false, length = 50)
-    private String categoryName;
+    @Column(name = "category_id", nullable = false)
+    private Long categoryId;
+
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(name = "title", nullable = false, length = 200)
+    private String title;
+
+    @Column(name = "content", nullable = false)
+    private String content;
+
+    @Builder.Default
+    @Column(name = "view_count", nullable = false)
+    private Integer viewCount = 0;
 
 }

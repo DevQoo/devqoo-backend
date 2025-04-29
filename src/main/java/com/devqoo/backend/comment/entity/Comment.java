@@ -1,4 +1,4 @@
-package com.devqoo.backend.category.entity;
+package com.devqoo.backend.comment.entity;
 
 import com.devqoo.backend.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -14,19 +14,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "comments")
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Category extends BaseTimeEntity {
+public class Comment extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
-    private Long id;
+    @Column(name = "comment_id")
+    private Long commentId;
 
-    @Column(name = "category_name", nullable = false, length = 50)
-    private String categoryName;
+    @Column(name = "post_id", nullable = false)
+    private Long postId;
+
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(name = "content", nullable = false, length = 500)
+    private String content;
 
 }
