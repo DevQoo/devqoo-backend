@@ -34,6 +34,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
+    - name: Grant execute permission for Gradle wrapper
+      run: chmod +x ./gradlew
+
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
