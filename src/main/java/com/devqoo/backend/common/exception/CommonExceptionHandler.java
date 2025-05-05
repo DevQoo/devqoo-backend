@@ -61,7 +61,7 @@ public class CommonExceptionHandler {
 	// 지원하지 않는 HTTP 메소드 요청 시
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	protected ResponseEntity<Void> handleHttpRequestMethodNotSupportedException(
-	) {
+		HttpRequestMethodNotSupportedException exception) {
 		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
 	}
 
