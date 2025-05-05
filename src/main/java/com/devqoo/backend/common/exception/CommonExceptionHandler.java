@@ -1,5 +1,6 @@
 package com.devqoo.backend.common.exception;
 
+import com.devqoo.backend.common.response.CommonResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -16,8 +17,20 @@ public class CommonExceptionHandler {
 
     // controller parameter 에 @Valid 실패 시
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    protected ResponseEntity<CommonResponse<Void>> handleMethodArgumentNotValidException(
+        MethodArgumentNotValidException exception
+    ) {
+
+        String errorMessage = exception.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(error -> String.format("[%s] %s", error.getField(), error.getDefaultMessage()))
+            .reduce((msg1, msg2) -> msg1 + ", " + msg2)
+            .orElse(ErrorCode.INVALID_INPUT_VALUE.getMessage());
+
+        return ResponseEntity
+            .status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatus())
+            .body(CommonResponse.error(ErrorCode.INVALID_INPUT_VALUE, errorMessage));
     }
 
     // 쿼리스트링/PathVariable → 타입 매핑 실패(enum, 숫자 등)
@@ -47,7 +60,7 @@ public class CommonExceptionHandler {
     // 지원하지 않는 HTTP 메소드 요청 시
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     protected ResponseEntity<Void> handleHttpRequestMethodNotSupportedException(
-            HttpRequestMethodNotSupportedException exception) {
+        HttpRequestMethodNotSupportedException exception) {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
 
