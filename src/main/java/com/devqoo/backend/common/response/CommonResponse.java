@@ -12,7 +12,6 @@ public final class CommonResponse<T> {
     private final T data;                     // response data
     private final String errorMessage;        // error message
 
-
     // ✅ success일 경우: data와 statusCode만 채움
     public static <T> CommonResponse<T> success(
         int statusCode,

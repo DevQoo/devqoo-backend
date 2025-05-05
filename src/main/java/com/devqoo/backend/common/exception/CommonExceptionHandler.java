@@ -35,25 +35,29 @@ public class CommonExceptionHandler {
 
     // 쿼리스트링/PathVariable → 타입 매핑 실패(enum, 숫자 등)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    protected ResponseEntity<Void> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    protected ResponseEntity<Void> handleMethodArgumentTypeMismatch(
+        MethodArgumentTypeMismatchException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     // JSON·XML 본문 파싱 실패
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    protected ResponseEntity<Void> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    protected ResponseEntity<Void> handleHttpMessageNotReadable(
+        HttpMessageNotReadableException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     // 필수 파라미터 누락
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    protected ResponseEntity<Void> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
+    protected ResponseEntity<Void> handleMissingServletRequestParameter(
+        MissingServletRequestParameterException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     // 지원하지 않는 Content-Type
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    protected ResponseEntity<Void> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
+    protected ResponseEntity<Void> handleHttpMediaTypeNotSupported(
+        HttpMediaTypeNotSupportedException ex) {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
     }
 
