@@ -6,11 +6,19 @@ import lombok.Getter;
 
 @Getter
 @Builder
+<<<<<<< HEAD
 public final class CommonResponse<T> {
 
     private final int statusCode;             // HTTP STATUS CODE
     private final T data;                     // response data
     private final String errorMessage;        // error message
+=======
+public class CommonResponse<T> {
+
+    private int statusCode;             // HTTP STATUS CODE
+    private T data;                     // response data
+    private String errorMessage;        // error message
+>>>>>>> 029d993 (Feat: commonResponse 생성)
 
 
     // ✅ success일 경우: data와 statusCode만 채움
