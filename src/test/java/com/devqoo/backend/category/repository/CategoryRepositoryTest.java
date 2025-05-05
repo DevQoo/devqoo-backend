@@ -32,11 +32,11 @@ class CategoryRepositoryTest {
 
         // when
         Category saved = categoryRepository.save(category);
-        Category found = categoryRepository.findById(saved.getId()).orElse(null);
+        Category found = categoryRepository.findById(saved.getCategoryId()).orElse(null);
 
         // then
         assertThat(found).isNotNull();
-        assertThat(found.getId()).isEqualTo(saved.getId());
+        assertThat(found.getCategoryId()).isEqualTo(saved.getCategoryId());
         assertThat(found.getCategoryName()).isEqualTo(categoryName);
     }
 }
