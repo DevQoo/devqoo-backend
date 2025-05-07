@@ -1,11 +1,13 @@
 package com.devqoo.backend.common.response;
 
 import com.devqoo.backend.common.exception.ErrorCode;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
+@Schema(description = "API 응답 공통 모델")
 public final class CommonResponse<T> {
 
     private final int statusCode;             // HTTP STATUS CODE

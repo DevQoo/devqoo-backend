@@ -31,4 +31,5 @@ public class Category extends BaseTimeEntity {
     public Category(String categoryName) {
         this.categoryName = categoryName;
     }
+
 }
