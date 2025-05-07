@@ -2,7 +2,6 @@ package com.devqoo.backend.category.controller;
 
 import com.devqoo.backend.category.dto.form.RegisterCategoryForm;
 import com.devqoo.backend.category.dto.response.CategoryResponseDto;
-import com.devqoo.backend.category.service.CategoryService;
 import com.devqoo.backend.common.response.CommonResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -22,8 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/categories")
 public class CategoryController implements CategoryApiDocs {
-
-    private final CategoryService categoryService;
 
     @PostMapping
     public ResponseEntity<CommonResponse<CategoryResponseDto>> createCategory(
