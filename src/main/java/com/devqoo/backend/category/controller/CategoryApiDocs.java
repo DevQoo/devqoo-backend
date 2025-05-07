@@ -39,8 +39,8 @@ public interface CategoryApiDocs {
 
     @RequestBody(
         description = "카테고리 수정 폼", required = true,
-        content = @Content(schema = @Schema(implementation = RegisterCategoryForm.class)
-        ))
+        content = @Content(schema = @Schema(implementation = RegisterCategoryForm.class))
+    )
     @Operation(summary = "카테고리 수정", description = "카테고리를 수정합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "카테고리 수정 성공"),
