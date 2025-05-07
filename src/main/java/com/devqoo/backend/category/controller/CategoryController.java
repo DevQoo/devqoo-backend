@@ -27,7 +27,7 @@ public class CategoryController implements CategoryApiDocs {
         @RequestBody @Valid RegisterCategoryForm registerCategoryForm
     ) {
         // TODO 관리자만 카테고리 생성 가능 (권한 검사하기)
-        categoryService.create(registerCategoryForm);
+//        categoryService.create(registerCategoryForm);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
