@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.common.config.JpaAuditingConfiguration;
+import com.devqoo.backend.provider.EntityProvider;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +21,35 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class CategoryRepositoryTest {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @DisplayName("카테고리를 저장하면, 저장된 값을 ID로 조회할 수 있다.")
+    @DisplayName("existsByCategoryName : 카테고리 이름이 이미 존재하는지 확인")
     @Test
-    void givenCategoryName_whenSaving_thenCanRetrieveById() {
+    void shouldReturnTrue_whenCategoryNameAlreadyExists() {
         // given
         String categoryName = "질문 게시판";
-        Category category = Category.builder()
-            .categoryName(categoryName)
-            .build();
-
+        Category category = EntityProvider.createCategory(categoryName);
+        categoryRepository.save(category);
+        entityManager.flush();
+        entityManager.clear();
         // when
-        Category saved = categoryRepository.save(category);
-        Category found = categoryRepository.findById(saved.getCategoryId()).orElse(null);
-
+        boolean isExists = categoryRepository.existsByCategoryName(categoryName);
         // then
-        assertThat(found).isNotNull();
-        assertThat(found.getCategoryId()).isEqualTo(saved.getCategoryId());
-        assertThat(found.getCategoryName()).isEqualTo(categoryName);
+        assertThat(isExists).isTrue();
+    }
+
+    @DisplayName("existsByCategoryName : 카테고리 이름이 존재하지 않는지 확인")
+    @Test
+    void shouldReturnFalse_whenCategoryNameDoesNotExist() {
+        // given
+        String categoryName = "질문 게시판";
+        // when
+        boolean isExists = categoryRepository.existsByCategoryName(categoryName);
+        // then
+        assertThat(isExists).isFalse();
     }
 }
