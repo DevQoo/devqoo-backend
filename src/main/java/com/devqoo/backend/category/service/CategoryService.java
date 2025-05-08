@@ -12,9 +12,9 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public void create(RegisterCategoryForm registerCategoryForm) {
+    public Category create(RegisterCategoryForm registerCategoryForm) {
         String categoryName = registerCategoryForm.categoryName();
         Category category = new Category(categoryName);
-        categoryRepository.save(category);
+        return categoryRepository.save(category);
     }
 }
