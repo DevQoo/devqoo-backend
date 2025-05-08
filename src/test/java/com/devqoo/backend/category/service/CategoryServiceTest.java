@@ -1,12 +1,14 @@
 package com.devqoo.backend.category.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import com.devqoo.backend.category.dto.form.RegisterCategoryForm;
 import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.category.repository.CategoryRepository;
+import com.devqoo.backend.provider.EntityProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,9 +31,9 @@ class CategoryServiceTest {
     void shouldCreateCategory_whenCategoryNameDoesNotExist() {
         // given
         RegisterCategoryForm form = new RegisterCategoryForm(CATEGORY_NAME);
-        Category category = new Category(CATEGORY_NAME);
+        Category category = EntityProvider.createCategory(CATEGORY_NAME);
         given(categoryRepository.existsByCategoryName(CATEGORY_NAME)).willReturn(false);
-        given(categoryRepository.save(any(Category.class))).willReturn(category); // 이 줄 추가!
+        given(categoryRepository.save(any(Category.class))).willReturn(category);
 
         // when
         Category createdCategory = categoryService.create(form);
@@ -45,9 +47,11 @@ class CategoryServiceTest {
     void shouldThrowException_whenCategoryNameAlreadyExists() {
         // given
         RegisterCategoryForm form = new RegisterCategoryForm(CATEGORY_NAME);
+        Category category = EntityProvider.createCategory(CATEGORY_NAME);
         given(categoryRepository.existsByCategoryName(CATEGORY_NAME)).willReturn(true);
-        // when
 
-        // then
+        // when & then
+        assertThatThrownBy(() -> categoryService.create(form))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }
