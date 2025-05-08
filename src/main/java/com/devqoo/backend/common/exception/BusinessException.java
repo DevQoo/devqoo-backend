@@ -8,7 +8,7 @@ public class BusinessException extends RuntimeException {
     private final ErrorCode errorCode;
 
 
-    // 생성자s
+    // 생성자
     public BusinessException(
         ErrorCode errorCode
     ) {
