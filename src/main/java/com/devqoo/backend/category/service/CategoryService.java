@@ -14,6 +14,9 @@ public class CategoryService {
 
     public Category create(RegisterCategoryForm registerCategoryForm) {
         String categoryName = registerCategoryForm.categoryName();
+        if (categoryRepository.existsByCategoryName(categoryName)) {
+            throw new IllegalArgumentException("Category already exists");
+        }
         Category category = new Category(categoryName);
         return categoryRepository.save(category);
     }
