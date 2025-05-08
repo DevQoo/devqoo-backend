@@ -1,7 +1,7 @@
 package com.devqoo.backend.common.exception;
 
 import com.devqoo.backend.common.response.CommonResponse;
-import org.springframework.http.HttpStatus;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -21,56 +21,92 @@ public class CommonExceptionHandler {
         MethodArgumentNotValidException exception
     ) {
 
-        String errorMessage = exception.getBindingResult()
+        List<String> errorMessage = getErrorList(exception);
+
+        return ResponseEntity
+            .status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatusCode())
+            .body(CommonResponse.error(ErrorCode.INVALID_INPUT_VALUE, errorMessage));
+    }
+
+    // errorList 반환
+    private static List<String> getErrorList(
+        MethodArgumentNotValidException exception
+    ) {
+        return exception.getBindingResult()
             .getFieldErrors()
             .stream()
             .map(error -> String.format("[%s] %s", error.getField(), error.getDefaultMessage()))
-            .reduce((msg1, msg2) -> msg1 + ", " + msg2)
-            .orElse(ErrorCode.INVALID_INPUT_VALUE.getMessage());
-
-        return ResponseEntity
-            .status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatus())
-            .body(CommonResponse.error(ErrorCode.INVALID_INPUT_VALUE, errorMessage));
+            .toList();
     }
 
     // 쿼리스트링/PathVariable → 타입 매핑 실패(enum, 숫자 등)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    protected ResponseEntity<Void> handleMethodArgumentTypeMismatch(
-        MethodArgumentTypeMismatchException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    protected ResponseEntity<CommonResponse<Void>> handleMethodArgumentTypeMismatch(
+        MethodArgumentTypeMismatchException exception
+    ) {
+        return ResponseEntity
+            .status(ErrorCode.TYPE_MISMATCH.getHttpStatusCode())
+            .body(CommonResponse.error(ErrorCode.TYPE_MISMATCH));
     }
 
     // JSON·XML 본문 파싱 실패
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    protected ResponseEntity<Void> handleHttpMessageNotReadable(
-        HttpMessageNotReadableException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    protected ResponseEntity<CommonResponse<Void>> handleHttpMessageNotReadable(
+        HttpMessageNotReadableException exception
+    ) {
+        return ResponseEntity
+            .status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatusCode())
+            .body(CommonResponse.error(ErrorCode.INVALID_INPUT_VALUE));
     }
 
     // 필수 파라미터 누락
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    protected ResponseEntity<Void> handleMissingServletRequestParameter(
-        MissingServletRequestParameterException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    protected ResponseEntity<CommonResponse<Void>> handleMissingServletRequestParameter(
+        MissingServletRequestParameterException exception
+    ) {
+        return ResponseEntity
+            .status(ErrorCode.MISSING_PARAMETER.getHttpStatusCode())
+            .body(CommonResponse.error(ErrorCode.MISSING_PARAMETER));
     }
 
     // 지원하지 않는 Content-Type
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    protected ResponseEntity<Void> handleHttpMediaTypeNotSupported(
-        HttpMediaTypeNotSupportedException ex) {
-        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+    protected ResponseEntity<CommonResponse<Void>> handleHttpMediaTypeNotSupported(
+        HttpMediaTypeNotSupportedException exception
+    ) {
+        return ResponseEntity
+            .status(ErrorCode.UNSUPPORTED_MEDIA_TYPE.getHttpStatusCode())
+            .body(CommonResponse.error(ErrorCode.UNSUPPORTED_MEDIA_TYPE));
     }
 
     // 지원하지 않는 HTTP 메소드 요청 시
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    protected ResponseEntity<Void> handleHttpRequestMethodNotSupportedException(
-        HttpRequestMethodNotSupportedException exception) {
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
+    protected ResponseEntity<CommonResponse<Void>> handleHttpRequestMethodNotSupportedException(
+        HttpRequestMethodNotSupportedException exception
+    ) {
+        return ResponseEntity
+            .status(ErrorCode.METHOD_NOT_ALLOWED.getHttpStatusCode())
+            .body(CommonResponse.error(ErrorCode.METHOD_NOT_ALLOWED));
     }
 
     // 서버 예외 핸들링
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<Void> handleException(Exception exception) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    protected ResponseEntity<CommonResponse<Void>> handleException(
+        Exception exception
+    ) {
+        return ResponseEntity
+            .status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatusCode())
+            .body(CommonResponse.error(ErrorCode.INTERNAL_SERVER_ERROR));
+    }
+
+    // 비즈니스 예외 핸들링
+    @ExceptionHandler(BusinessException.class)
+    protected ResponseEntity<CommonResponse<Void>> handleBusinessException(
+        BusinessException exception
+    ) {
+        ErrorCode errorCode = exception.getErrorCode();
+        return ResponseEntity
+            .status(errorCode.getHttpStatusCode())
+            .body(CommonResponse.error(errorCode));
     }
 }
