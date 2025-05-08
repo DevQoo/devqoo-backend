@@ -1,0 +1,20 @@
+package com.devqoo.backend.category.service;
+
+import com.devqoo.backend.category.dto.form.RegisterCategoryForm;
+import com.devqoo.backend.category.entity.Category;
+import com.devqoo.backend.category.repository.CategoryRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class CategoryService {
+
+    private final CategoryRepository categoryRepository;
+
+    public void create(RegisterCategoryForm registerCategoryForm) {
+        String categoryName = registerCategoryForm.categoryName();
+        Category category = new Category(categoryName);
+        categoryRepository.save(category);
+    }
+}
