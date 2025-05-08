@@ -3,10 +3,10 @@ package com.devqoo.backend.category.service;
 import com.devqoo.backend.category.dto.form.RegisterCategoryForm;
 import com.devqoo.backend.category.dto.response.CategoryResponseDto;
 import com.devqoo.backend.category.entity.Category;
-import com.devqoo.backend.common.annotation.Facade;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-@Facade
+@Service
 @RequiredArgsConstructor
 public class CategoryFacade {
 
