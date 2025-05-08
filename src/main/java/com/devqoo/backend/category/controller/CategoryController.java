@@ -2,6 +2,7 @@ package com.devqoo.backend.category.controller;
 
 import com.devqoo.backend.category.dto.form.RegisterCategoryForm;
 import com.devqoo.backend.category.dto.response.CategoryResponseDto;
+import com.devqoo.backend.category.service.CategoryService;
 import com.devqoo.backend.common.response.CommonResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -22,12 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/categories")
 public class CategoryController implements CategoryApiDocs {
 
+    private final CategoryService categoryService;
+
     @PostMapping
     public ResponseEntity<CommonResponse<CategoryResponseDto>> createCategory(
         @RequestBody @Valid RegisterCategoryForm registerCategoryForm
     ) {
         // TODO 관리자만 카테고리 생성 가능 (권한 검사하기)
-//        categoryService.create(registerCategoryForm);
+        categoryService.create(registerCategoryForm);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
