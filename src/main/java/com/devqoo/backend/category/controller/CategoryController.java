@@ -31,9 +31,9 @@ public class CategoryController implements CategoryApiDocs {
     ) {
         // TODO 관리자만 카테고리 생성 가능 (권한 검사하기)
         CategoryResponseDto responseDto = categoryFacade.createCategory(registerCategoryForm);
-        HttpStatus status = HttpStatus.CREATED;
-        CommonResponse<CategoryResponseDto> response = CommonResponse.success(status.value(), responseDto);
-        return ResponseEntity.status(status).body(response);
+        HttpStatus createStatus = HttpStatus.CREATED;
+        CommonResponse<CategoryResponseDto> response = CommonResponse.success(createStatus.value(), responseDto);
+        return ResponseEntity.status(createStatus).body(response);
     }
 
     @GetMapping
