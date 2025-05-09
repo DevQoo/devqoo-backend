@@ -18,9 +18,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
+<<<<<<< HEAD
     
     public static final String CATEGORY_NAME = "질문 게시판";
 
+=======
+
+    public static final String CATEGORY_NAME = "질문 게시판";
+>>>>>>> f116f13b0a1525aa55f565383846301c77160007
     @Mock
     private CategoryRepository categoryRepository;
 
