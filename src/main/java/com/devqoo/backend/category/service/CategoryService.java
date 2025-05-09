@@ -7,6 +7,7 @@ import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +15,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    @Transactional
     public Category create(RegisterCategoryForm registerCategoryForm) {
         String categoryName = registerCategoryForm.categoryName();
         if (categoryRepository.existsByCategoryName(categoryName)) {
