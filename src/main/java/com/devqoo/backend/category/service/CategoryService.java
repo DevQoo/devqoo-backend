@@ -3,6 +3,8 @@ package com.devqoo.backend.category.service;
 import com.devqoo.backend.category.dto.form.RegisterCategoryForm;
 import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.category.repository.CategoryRepository;
+import com.devqoo.backend.common.exception.BusinessException;
+import com.devqoo.backend.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,7 @@ public class CategoryService {
     public Category create(RegisterCategoryForm registerCategoryForm) {
         String categoryName = registerCategoryForm.categoryName();
         if (categoryRepository.existsByCategoryName(categoryName)) {
-            throw new IllegalArgumentException("Category already exists");
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED);
         }
         Category category = new Category(categoryName);
         return categoryRepository.save(category);
