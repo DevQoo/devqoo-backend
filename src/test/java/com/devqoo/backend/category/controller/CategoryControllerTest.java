@@ -1,5 +1,6 @@
 package com.devqoo.backend.category.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -10,6 +11,8 @@ import com.devqoo.backend.category.dto.form.RegisterCategoryForm;
 import com.devqoo.backend.category.dto.response.CategoryResponseDto;
 import com.devqoo.backend.category.service.CategoryFacade;
 import com.devqoo.backend.common.config.SecurityConfig;
+import com.devqoo.backend.common.exception.BusinessException;
+import com.devqoo.backend.common.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,11 +63,21 @@ class CategoryControllerTest {
 
     @DisplayName("POST /api/categories - 카테고리 생성 실패")
     @Test
-    void writeHereTestName() {
+    void writeHereTestName() throws Exception {
         // given
+        String categoryName = "질문 게시판";
+        RegisterCategoryForm form = new RegisterCategoryForm(categoryName);
 
-        // when
+        given(categoryFacade.createCategory(any()))
+            .willThrow(new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED));
+        // when && then
 
-        // then
+        mockMvc.perform(post("/api/categories")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(form)))
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.errorMessageList[0]").value(ErrorCode.CATEGORY_NAME_DUPLICATED.getMessage()))
+            .andDo(print());
+
     }
 }
