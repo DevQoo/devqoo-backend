@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.given;
 import com.devqoo.backend.category.dto.form.RegisterCategoryForm;
 import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.category.repository.CategoryRepository;
+import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.provider.EntityProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,6 @@ class CategoryServiceTest {
 
         // when & then
         assertThatThrownBy(() -> categoryService.create(form))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(BusinessException.class);
     }
 }
