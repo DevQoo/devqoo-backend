@@ -19,10 +19,7 @@ public final class CommonResponse<T> {
 
 
     // ✅ success일 경우: data와 statusCode만 채움
-    public static <T> CommonResponse<T> success(
-        int statusCode,
-        T data
-    ) {
+    public static <T> CommonResponse<T> success(int statusCode, T data) {
         return CommonResponse.<T>builder()
             .responseTime(LocalDateTime.now())
             .statusCode(statusCode)
@@ -32,10 +29,7 @@ public final class CommonResponse<T> {
     }
 
     // ✅ error일 경우: errorCode로부터 statusCode와 기본 메시지 여러개일 경우
-    public static <T> CommonResponse<T> error(
-        ErrorCode errorCode,
-        List<String> errorMessages
-    ) {
+    public static <T> CommonResponse<T> error(ErrorCode errorCode, List<String> errorMessages) {
         return CommonResponse.<T>builder()
             .responseTime(LocalDateTime.now())
             .statusCode(errorCode.getHttpStatusCode())
@@ -45,9 +39,7 @@ public final class CommonResponse<T> {
     }
 
     // ✅ error일 경우: errorCode 하나일 경우
-    public static <T> CommonResponse<T> error(
-        ErrorCode errorCode
-    ) {
+    public static <T> CommonResponse<T> error(ErrorCode errorCode) {
         return error(errorCode, List.of(errorCode.getMessage()));
     }
 }

@@ -9,19 +9,9 @@ public class BusinessException extends RuntimeException {
 
 
     // 생성자
-    public BusinessException(
-        ErrorCode errorCode
-    ) {
+    public BusinessException(ErrorCode errorCode) {
         super(errorCode.getMessage());  // ErrorCode 메시지 자동 연결
         this.errorCode = errorCode;
     }
 
-    // 생성자 (커스텀 메시지 사용)
-    public BusinessException(
-        ErrorCode errorCode,
-        String customMessage
-    ) {
-        super(customMessage);
-        this.errorCode = errorCode;
-    }
 }

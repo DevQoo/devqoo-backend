@@ -1,5 +1,12 @@
 package com.devqoo.backend.common.exception;
 
+import static com.devqoo.backend.common.exception.ErrorCode.INTERNAL_SERVER_ERROR;
+import static com.devqoo.backend.common.exception.ErrorCode.INVALID_INPUT_VALUE;
+import static com.devqoo.backend.common.exception.ErrorCode.METHOD_NOT_ALLOWED;
+import static com.devqoo.backend.common.exception.ErrorCode.MISSING_PARAMETER;
+import static com.devqoo.backend.common.exception.ErrorCode.TYPE_MISMATCH;
+import static com.devqoo.backend.common.exception.ErrorCode.UNSUPPORTED_MEDIA_TYPE;
+
 import com.devqoo.backend.common.response.CommonResponse;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +31,12 @@ public class CommonExceptionHandler {
         List<String> errorMessage = getErrorList(exception);
 
         return ResponseEntity
-            .status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatusCode())
-            .body(CommonResponse.error(ErrorCode.INVALID_INPUT_VALUE, errorMessage));
+            .status(INVALID_INPUT_VALUE.getHttpStatusCode())
+            .body(CommonResponse.error(INVALID_INPUT_VALUE, errorMessage));
     }
 
     // errorList 반환
-    private static List<String> getErrorList(
-        MethodArgumentNotValidException exception
-    ) {
+    private static List<String> getErrorList(MethodArgumentNotValidException exception) {
         return exception.getBindingResult()
             .getFieldErrors()
             .stream()
@@ -45,8 +50,8 @@ public class CommonExceptionHandler {
         MethodArgumentTypeMismatchException exception
     ) {
         return ResponseEntity
-            .status(ErrorCode.TYPE_MISMATCH.getHttpStatusCode())
-            .body(CommonResponse.error(ErrorCode.TYPE_MISMATCH));
+            .status(TYPE_MISMATCH.getHttpStatusCode())
+            .body(CommonResponse.error(TYPE_MISMATCH));
     }
 
     // JSON·XML 본문 파싱 실패
@@ -55,8 +60,8 @@ public class CommonExceptionHandler {
         HttpMessageNotReadableException exception
     ) {
         return ResponseEntity
-            .status(ErrorCode.INVALID_INPUT_VALUE.getHttpStatusCode())
-            .body(CommonResponse.error(ErrorCode.INVALID_INPUT_VALUE));
+            .status(INVALID_INPUT_VALUE.getHttpStatusCode())
+            .body(CommonResponse.error(INVALID_INPUT_VALUE));
     }
 
     // 필수 파라미터 누락
@@ -65,8 +70,8 @@ public class CommonExceptionHandler {
         MissingServletRequestParameterException exception
     ) {
         return ResponseEntity
-            .status(ErrorCode.MISSING_PARAMETER.getHttpStatusCode())
-            .body(CommonResponse.error(ErrorCode.MISSING_PARAMETER));
+            .status(MISSING_PARAMETER.getHttpStatusCode())
+            .body(CommonResponse.error(MISSING_PARAMETER));
     }
 
     // 지원하지 않는 Content-Type
@@ -75,8 +80,8 @@ public class CommonExceptionHandler {
         HttpMediaTypeNotSupportedException exception
     ) {
         return ResponseEntity
-            .status(ErrorCode.UNSUPPORTED_MEDIA_TYPE.getHttpStatusCode())
-            .body(CommonResponse.error(ErrorCode.UNSUPPORTED_MEDIA_TYPE));
+            .status(UNSUPPORTED_MEDIA_TYPE.getHttpStatusCode())
+            .body(CommonResponse.error(UNSUPPORTED_MEDIA_TYPE));
     }
 
     // 지원하지 않는 HTTP 메소드 요청 시
@@ -85,25 +90,22 @@ public class CommonExceptionHandler {
         HttpRequestMethodNotSupportedException exception
     ) {
         return ResponseEntity
-            .status(ErrorCode.METHOD_NOT_ALLOWED.getHttpStatusCode())
-            .body(CommonResponse.error(ErrorCode.METHOD_NOT_ALLOWED));
+            .status(METHOD_NOT_ALLOWED.getHttpStatusCode())
+            .body(CommonResponse.error(METHOD_NOT_ALLOWED));
     }
 
     // 서버 예외 핸들링
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<CommonResponse<Void>> handleException(
-        Exception exception
-    ) {
+    protected ResponseEntity<CommonResponse<Void>> handleException(Exception exception) {
         return ResponseEntity
-            .status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatusCode())
-            .body(CommonResponse.error(ErrorCode.INTERNAL_SERVER_ERROR));
+            .status(INTERNAL_SERVER_ERROR.getHttpStatusCode())
+            .body(CommonResponse.error(INTERNAL_SERVER_ERROR));
     }
 
     // 비즈니스 예외 핸들링
     @ExceptionHandler(BusinessException.class)
-    protected ResponseEntity<CommonResponse<Void>> handleBusinessException(
-        BusinessException exception
-    ) {
+    protected ResponseEntity<CommonResponse<Void>> handleBusinessException(BusinessException exception) {
+
         ErrorCode errorCode = exception.getErrorCode();
         return ResponseEntity
             .status(errorCode.getHttpStatusCode())
