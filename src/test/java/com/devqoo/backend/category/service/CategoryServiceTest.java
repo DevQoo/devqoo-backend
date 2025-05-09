@@ -49,7 +49,6 @@ class CategoryServiceTest {
     void shouldThrowException_whenCategoryNameAlreadyExists() {
         // given
         RegisterCategoryForm form = new RegisterCategoryForm(CATEGORY_NAME);
-        Category category = EntityProvider.createCategory(CATEGORY_NAME);
         given(categoryRepository.existsByCategoryName(CATEGORY_NAME)).willReturn(true);
 
         // when & then
