@@ -1,6 +1,8 @@
 package com.devqoo.backend.post.controller;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.devqoo.backend.category.entity.Category;
@@ -76,5 +78,25 @@ class PostControllerTest {
         Assertions.assertEquals(saved.getTitle(), testPostForm.getTitle());
         Assertions.assertEquals(saved.getContent(), testPostForm.getContent());
 
+    }
+
+    @Test
+    @DisplayName("POST /api/posts - 게시글 생성 에러")
+    void PostCreateApiErrorTest() throws Exception {
+        // given
+        PostRegisterForm testPostForm = PostRegisterForm.builder()
+            .title("")
+            .content("")
+            .userId(testUser.getUserId())
+            .categoryId(testCategory.getCategoryId())
+            .build();
+
+        mockMvc.perform(post("/api/posts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testPostForm)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorMessageList", containsInAnyOrder(
+                "[content] 내용은 필수입니다.", "[title] 제목은 필수입니다."
+            )));
     }
 }
