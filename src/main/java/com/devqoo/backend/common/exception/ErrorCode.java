@@ -18,10 +18,12 @@ public enum ErrorCode {
 
     // ======== 비즈니스 오류 =========
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
     USER_UNAUTHORIZED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
-    DUPLICATE_TITLE(HttpStatus.BAD_REQUEST, "제목이 중복되었습니다.")
-    ;
+    DUPLICATE_TITLE(HttpStatus.BAD_REQUEST, "제목이 중복되었습니다."),
+
+    // ========= 카테고리 ============,
+    CATEGORY_NAME_DUPLICATED(HttpStatus.CONFLICT, "카테고리 이름이 중복되었습니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다.");
 
 
     private final HttpStatus httpStatus;    // HTTP STATUS CODE
