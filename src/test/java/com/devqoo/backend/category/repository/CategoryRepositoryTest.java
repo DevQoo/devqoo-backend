@@ -52,4 +52,5 @@ class CategoryRepositoryTest {
         // then
         assertThat(isExists).isFalse();
     }
+
 }
