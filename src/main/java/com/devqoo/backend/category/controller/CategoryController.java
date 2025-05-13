@@ -38,8 +38,9 @@ public class CategoryController implements CategoryApiDocs {
 
     @GetMapping
     public ResponseEntity<CommonResponse<List<CategoryResponseDto>>> getCategories() {
-
-        return ResponseEntity.ok().build();
+        List<CategoryResponseDto> categories = categoryFacade.getCategories();
+        CommonResponse<List<CategoryResponseDto>> response = CommonResponse.success(HttpStatus.OK.value(), categories);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{categoryId}")

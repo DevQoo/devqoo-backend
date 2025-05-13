@@ -5,6 +5,7 @@ import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.category.repository.CategoryRepository;
 import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.common.exception.ErrorCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,5 +24,10 @@ public class CategoryService {
         }
         Category category = new Category(categoryName);
         return categoryRepository.save(category);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Category> findAll() {
+        return categoryRepository.findAll();
     }
 }
