@@ -11,6 +11,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import javax.crypto.SecretKey;
@@ -19,49 +20,52 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class JwtProvider {
 
     private final SecretKey accessKey;
     private final SecretKey refreshKey;
-
-    @Value("${JWT_ACCESS_TIME}")
-    private int ACCESS_EXPIRE_TIME;
-    @Value("${JWT_REFRESH_TIME}")
-    private int REFRESH_EXPIRE_TIME;
+    private final int accessExpireTime;
+    private final int refreshExpireTime;
 
     public JwtProvider(
         @Value("${JWT_ACCESS_SECRET}") String accessKey,
-        @Value("${JWT_REFRESH_SECRET}") String refreshKey
+        @Value("${JWT_REFRESH_SECRET}") String refreshKey,
+        @Value("${JWT_ACCESS_TIME}") int accessExpireTime,
+        @Value("${JWT_REFRESH_TIME}") int refreshExpireTime
     ) {
         this.accessKey = Keys.hmacShaKeyFor(accessKey.getBytes(StandardCharsets.UTF_8));
         this.refreshKey = Keys.hmacShaKeyFor(refreshKey.getBytes(StandardCharsets.UTF_8));
+        this.accessExpireTime = accessExpireTime;
+        this.refreshExpireTime = refreshExpireTime;
     }
 
     // Access Token 발급
     public String generateAccessToken(Long userId, String email, String role) {
-        return createToken(userId, email, role, ACCESS_EXPIRE_TIME, accessKey);
+        return createToken(userId, email, role, accessExpireTime, accessKey);
     }
 
     // Refresh Token 발급
     public String generateRefreshToken(Long userId, String email, String role) {
-        return createToken(userId, email, role, REFRESH_EXPIRE_TIME, refreshKey);
+        return createToken(userId, email, role, refreshExpireTime, refreshKey);
     }
 
     // Token 생성
-    public String createToken(
+    private String createToken(
         Long userId, String email, String role, int expireTime, SecretKey secretKey
     ) {
 
-        Date now = new Date();
+        Instant now = Instant.now();
+        Instant expiration = now.plusSeconds(expireTime);
 
         return Jwts.builder()
             .subject(userId.toString())
             .claim("email", email)
             .claim("role", role)
-            .issuedAt(now)
-            .expiration(new Date(now.getTime() + expireTime))
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(expiration))
             .signWith(secretKey)
             .compact();
     }
@@ -71,16 +75,37 @@ public class JwtProvider {
 
         try {
 
+            if (!StringUtils.hasText(token)) {
+                return false;
+            }
+
             Claims claims = parseClaims(token, secretKeyType);
 
             if (claims == null) {
                 return false;
             }
+
             return !claims.getExpiration().before(new Date());
 
         } catch (Exception ex) {
             return false;
         }
+    }
+    
+    // JWT 토큰에서 사용자 정보를 추출하여 Spring Security 의 Authentication 객체로 변환
+    public Authentication getAuthentication(String token, SecretKeyType secretKeyType) {
+
+        Claims claims = parseClaims(token, secretKeyType);
+
+        Long userId = Long.parseLong(claims.getSubject());
+        String email = claims.get("email", String.class);
+        String role = claims.get("role", String.class);
+
+        CustomUserDetails customUserDetails = new CustomUserDetails(userId, email, role);
+
+        return new UsernamePasswordAuthenticationToken(
+            customUserDetails, "", List.of(new SimpleGrantedAuthority(role))
+        );
     }
 
     // Claims 의 정보 확인
@@ -113,22 +138,5 @@ public class JwtProvider {
             case ACCESS -> accessKey;
             case REFRESH -> refreshKey;
         };
-    }
-
-    // JWT 토큰에서 사용자 정보를 추출하여 Spring Security 의 Authentication 객체로 변환
-    public Authentication getAuthentication(String token, SecretKeyType secretKeyType) {
-
-        Claims claims = parseClaims(token, secretKeyType);
-
-        Long userId = Long.parseLong(claims.getSubject());
-        String email = claims.get("email", String.class);
-        String role = claims.get("role", String.class);
-
-        CustomUserDetails customUserDetails =
-            new CustomUserDetails(userId, email, role);
-
-        return new UsernamePasswordAuthenticationToken(
-            customUserDetails, "", List.of(new SimpleGrantedAuthority(role))
-        );
     }
 }

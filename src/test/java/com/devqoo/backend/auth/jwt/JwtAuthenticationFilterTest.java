@@ -12,7 +12,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 class JwtAuthenticationFilterTest {
 
@@ -24,13 +23,12 @@ class JwtAuthenticationFilterTest {
 
         String accessKey = "mock-access-secret-key-must-be-32bytes!!";
         String refreshKey = "mock-refresh-secret-key-must-be-32byte!!";
+        int accessExpireTime = 300000;
+        int refreshExpireTime = 330000;
 
-        jwtProvider = new JwtProvider(accessKey, refreshKey);
-
-        ReflectionTestUtils.setField(jwtProvider, "ACCESS_EXPIRE_TIME", 300000);
-        ReflectionTestUtils.setField(jwtProvider, "REFRESH_EXPIRE_TIME", 330000);
-
+        jwtProvider = new JwtProvider(accessKey, refreshKey, accessExpireTime, refreshExpireTime);
         jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtProvider);
+
         SecurityContextHolder.clearContext();
     }
 

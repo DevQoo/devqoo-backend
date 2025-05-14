@@ -21,11 +21,10 @@ class JwtProviderTest {
 
         String accessKey = "mock-access-secret-key-must-be-32bytes!!";
         String refreshKey = "mock-refresh-secret-key-must-be-32byte!!";
+        int accessExpireTime = 300000;
+        int refreshExpireTime = 330000;
 
-        jwtProvider = new JwtProvider(accessKey, refreshKey);
-
-        ReflectionTestUtils.setField(jwtProvider, "ACCESS_EXPIRE_TIME", 300000);
-        ReflectionTestUtils.setField(jwtProvider, "REFRESH_EXPIRE_TIME", 330000);
+        jwtProvider = new JwtProvider(accessKey, refreshKey, accessExpireTime, refreshExpireTime);
     }
 
     @Test
