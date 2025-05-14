@@ -74,7 +74,9 @@ public class JwtProvider {
     public boolean validateToken(String token, SecretKeyType secretKeyType) {
 
         try {
-
+                  if (StringUtils.hasTest(token) {
+                    return false;
+                  }
             if (!StringUtils.hasText(token)) {
                 return false;
             }
