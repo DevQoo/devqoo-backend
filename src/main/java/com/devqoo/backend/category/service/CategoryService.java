@@ -33,6 +33,18 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
+    @Transactional
+    public Category update(Long categoryId, RegisterCategoryForm registerCategoryForm) {
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+        String categoryName = registerCategoryForm.categoryName();
+        if (categoryRepository.existsByCategoryName(categoryName)) {
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED);
+        }
+        category.update(categoryName);
+        return category;
+    }
+
     /*
      * 조회 (categoryId 기준)
      * 존재 하지 않으면 BusinessException 발생

@@ -10,6 +10,7 @@ import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.category.repository.CategoryRepository;
 import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.provider.EntityProvider;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,4 +57,22 @@ class CategoryServiceTest {
             .isInstanceOf(BusinessException.class);
     }
 
+    @DisplayName("update: 카테고리 수정 테스트")
+    @Test
+//    @Disabled("수정 테스트는 아직 구현되지 않음")
+    void shouldUpdateCategory_whenCategoryExists() {
+        // given
+        Category category = EntityProvider.createCategory(CATEGORY_NAME);
+        given(categoryRepository.findById(any())).willReturn(Optional.of(category));
+
+        String newCategoryName = "New Category Name";
+        RegisterCategoryForm form = new RegisterCategoryForm(newCategoryName);
+        given(categoryRepository.existsByCategoryName(form.categoryName())).willReturn(false);
+
+        // when
+        categoryService.update(1L, form);
+
+        // then
+        assertThat(category.getCategoryName()).isEqualTo(newCategoryName);
+    }
 }

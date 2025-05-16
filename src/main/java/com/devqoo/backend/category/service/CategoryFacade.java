@@ -24,4 +24,9 @@ public class CategoryFacade {
             .map(CategoryResponseDto::new)
             .toList();
     }
+
+    public CategoryResponseDto updateCategory(Long categoryId, RegisterCategoryForm form) {
+        Category category = categoryService.update(categoryId, form);
+        return new CategoryResponseDto(category);
+    }
 }

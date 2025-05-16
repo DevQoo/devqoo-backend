@@ -48,7 +48,10 @@ public class CategoryController implements CategoryApiDocs {
         @PathVariable Long categoryId,
         @RequestBody @Valid RegisterCategoryForm registerCategoryForm
     ) {
-        return ResponseEntity.ok().build();
+        CategoryResponseDto categoryResponseDto = categoryFacade.updateCategory(categoryId, registerCategoryForm);
+        CommonResponse<CategoryResponseDto> categoryResponse =
+            CommonResponse.success(HttpStatus.OK.value(), categoryResponseDto);
+        return ResponseEntity.ok(categoryResponse);
     }
 
     @DeleteMapping("/{categoryId}")
