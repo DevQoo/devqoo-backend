@@ -2,6 +2,7 @@ package com.devqoo.backend.category.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -15,6 +16,7 @@ import com.devqoo.backend.common.config.SecurityConfig;
 import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.common.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -81,6 +83,40 @@ class CategoryControllerTest {
                 .content(objectMapper.writeValueAsString(form)))
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$.errorMessageList[0]").value(ErrorCode.CATEGORY_NAME_DUPLICATED.getMessage()))
+            .andDo(print());
+
+    }
+
+    @DisplayName("POST /api/categories - 카테고리 생성 실패 - 잘못된 요청")
+    @Test
+    void shouldReturn400_whenRequestBodyIsInvalid() throws Exception {
+        // given
+        RegisterCategoryForm form = new RegisterCategoryForm("");
+
+        // when && then
+        mockMvc.perform(post("/api/categories")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(form)))
+            .andExpect(status().isBadRequest())
+            .andDo(print());
+    }
+
+    @DisplayName("GET /api/categories - 카테고리 목록 조회")
+    @Test
+    void shouldReturnCategoryList() throws Exception {
+        // given
+        List<CategoryResponseDto> responseDtos = List.of(
+            new CategoryResponseDto(1L, "질문 게시판"),
+            new CategoryResponseDto(2L, "자유 게시판")
+        );
+        given(categoryFacade.getCategories()).willReturn(responseDtos);
+
+        // when && then
+        mockMvc.perform(get("/api/categories")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data.length()").value(2))
             .andDo(print());
 
     }
