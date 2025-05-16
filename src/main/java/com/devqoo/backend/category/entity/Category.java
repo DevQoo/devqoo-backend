@@ -26,10 +26,12 @@ public class Category extends BaseTimeEntity {
     @Column(name = "category_name", nullable = false, length = 50)
     private String categoryName;
 
-
     @Builder
     public Category(String categoryName) {
         this.categoryName = categoryName;
     }
 
+    public void update(String categoryName) {
+        this.categoryName = categoryName;
+    }
 }
