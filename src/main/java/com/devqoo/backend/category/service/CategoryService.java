@@ -1,5 +1,7 @@
 package com.devqoo.backend.category.service;
 
+import static com.devqoo.backend.common.exception.ErrorCode.CATEGORY_NOT_FOUND;
+
 import com.devqoo.backend.category.dto.form.RegisterCategoryForm;
 import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.category.repository.CategoryRepository;
@@ -29,5 +31,15 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public List<Category> findAll() {
         return categoryRepository.findAll();
+    }
+
+    /*
+     * 조회 (categoryId 기준)
+     * 존재 하지 않으면 BusinessException 발생
+     * */
+    @Transactional(readOnly = true)
+    public Category findById(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new BusinessException(CATEGORY_NOT_FOUND));
     }
 }

@@ -1,14 +1,20 @@
 package com.devqoo.backend.post.service;
 
+import static com.devqoo.backend.common.exception.ErrorCode.POST_NOT_FOUND;
+
 import com.devqoo.backend.category.entity.Category;
+import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.post.dto.form.PostRegisterForm;
+import com.devqoo.backend.post.dto.response.PostResponseDto;
 import com.devqoo.backend.post.entity.Post;
 import com.devqoo.backend.post.repository.PostRepository;
 import com.devqoo.backend.user.entity.User;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -16,9 +22,11 @@ public class PostService {
     private final PostRepository postRepository;
 
 
-    /* post create */
+    // post 생성
     @Transactional
     public Long createPost(PostRegisterForm postRegisterForm, User user, Category category) {
+        log.debug("====> postService createPost in");
+
         Post post = Post.builder()
             .category(category)
             .user(user)
@@ -26,8 +34,25 @@ public class PostService {
             .content(postRegisterForm.getContent())
             .build();
 
-        // 저장
-        Post savePost = postRepository.save(post);
-        return savePost.getPostId();
+        return postRepository.save(post).getPostId();
+    }
+
+    // 게시글 엔티티를 DTO로 변환
+    @Transactional(readOnly = true)
+    public PostResponseDto getPostDetailById(Long postId) {
+        log.debug("====> postService getPostDetailById in");
+
+        Post post = findById(postId);
+        return PostResponseDto.from(post);
+    }
+
+    /*
+     * 조회 (postId 기준)
+     * 존재 하지 않으면 BusinessException 발생
+     * */
+    @Transactional(readOnly = true)
+    public Post findById(Long postId) {
+        return postRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(POST_NOT_FOUND));
     }
 }
