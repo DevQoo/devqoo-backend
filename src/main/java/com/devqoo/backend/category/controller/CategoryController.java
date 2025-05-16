@@ -49,8 +49,8 @@ public class CategoryController implements CategoryApiDocs {
         @RequestBody @Valid RegisterCategoryForm registerCategoryForm
     ) {
         CategoryResponseDto categoryResponseDto = categoryFacade.updateCategory(categoryId, registerCategoryForm);
-        CommonResponse<CategoryResponseDto> categoryResponse = CommonResponse.success(HttpStatus.OK.value(),
-            categoryResponseDto);
+        CommonResponse<CategoryResponseDto> categoryResponse =
+            CommonResponse.success(HttpStatus.OK.value(), categoryResponseDto);
         return ResponseEntity.ok(categoryResponse);
     }
 
