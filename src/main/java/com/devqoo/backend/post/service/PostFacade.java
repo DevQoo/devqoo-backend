@@ -1,10 +1,13 @@
 package com.devqoo.backend.post.service;
 
 import com.devqoo.backend.category.entity.Category;
+import com.devqoo.backend.category.service.CategoryService;
+import com.devqoo.backend.post.dto.response.PostResponseDto;
 import com.devqoo.backend.post.dto.form.PostRegisterForm;
+import com.devqoo.backend.post.entity.Post;
 import com.devqoo.backend.user.entity.User;
+import com.devqoo.backend.user.service.UserService;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,19 +19,29 @@ public class PostFacade {
 
     private final EntityManager em;
     private final PostService postService;
+    private final CategoryService categoryService;
+    private final UserService userService;
 
 
-    @Transactional
+    /*
+    * userId, categoryId 검증
+    * userId, categoryId 유효성 검증 후 PostService에 위임
+    * */
     public Long createPost(PostRegisterForm postRegisterForm) {
-
-        log.info("====> Facade createPost in");
+        log.debug("====> Facade createPost in");
 
         // 유저 검증
-        User user = em.getReference(User.class, postRegisterForm.getUserId());
+        User user = userService.findById(postRegisterForm.getUserId());
 
         // 카테고리 검증
-        Category category = em.getReference(Category.class, postRegisterForm.getCategoryId());
+        Category category = categoryService.findById(postRegisterForm.getCategoryId());
 
         return postService.createPost(postRegisterForm, user, category);
+    }
+
+    // 게시글 상세 조회
+    public PostResponseDto getPostDetail(Long postId) {
+        log.debug("====> Facade getPostDetail in");
+        return postService.getPostDetailById(postId);
     }
 }
