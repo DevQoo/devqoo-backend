@@ -57,6 +57,7 @@ public class CategoryService {
 
     @Transactional
     public void deleteById(Long categoryId) {
+        // TODO 소프트 삭제, 하드 삭제 구현 여부 상의하기
 //        categoryRepository.deleteById(categoryId);
     }
 }

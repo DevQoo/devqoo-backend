@@ -3,6 +3,7 @@ package com.devqoo.backend.category.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,6 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -119,5 +123,25 @@ class CategoryControllerTest {
             .andExpect(jsonPath("$.data.length()").value(2))
             .andDo(print());
 
+    }
+
+    @DisplayName("PATCH /api/categories/{categoryId} - 유효하지 않은 카테고리 이름은 2글자 제한 400 반환")
+    @ParameterizedTest
+    @ValueSource(strings = {"일"})
+    @NullAndEmptySource
+    void shouldReturn400_whenRequestIsInvalid(String invalidNewName) throws Exception {
+        // given
+        Long categoryId = 1L;
+        RegisterCategoryForm requestDto = new RegisterCategoryForm(invalidNewName);
+//        CategoryResponseDto expectResponse = new CategoryResponseDto(new Category(invalidNewName));
+//        when(categoryFacade.updateCategory(anyLong(), requestDto))
+//            .thenThrow(new Exception());
+
+        // when & then
+        mockMvc.perform(patch("/api/categories/" + categoryId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            .andExpect(status().isBadRequest())
+            .andDo(print());
     }
 }
