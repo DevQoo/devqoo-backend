@@ -3,6 +3,7 @@ package com.devqoo.backend.category.controller;
 import com.devqoo.backend.category.dto.form.RegisterCategoryForm;
 import com.devqoo.backend.category.dto.response.CategoryResponseDto;
 import com.devqoo.backend.category.service.CategoryFacade;
+import com.devqoo.backend.category.service.CategoryService;
 import com.devqoo.backend.common.response.CommonResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -23,13 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/categories")
 public class CategoryController implements CategoryApiDocs {
 
+    // TODO : API 호출 시 관리자만 호출 할 수 있도록 권한 설정 필요 - 조회 제외
     private final CategoryFacade categoryFacade;
+    private final CategoryService categoryService;
 
     @PostMapping
     public ResponseEntity<CommonResponse<CategoryResponseDto>> createCategory(
         @RequestBody @Valid RegisterCategoryForm registerCategoryForm
     ) {
-        // TODO 관리자만 카테고리 생성 가능 (권한 검사하기)
         CategoryResponseDto responseDto = categoryFacade.createCategory(registerCategoryForm);
         HttpStatus createStatus = HttpStatus.CREATED;
         CommonResponse<CategoryResponseDto> response = CommonResponse.success(createStatus.value(), responseDto);
@@ -56,6 +58,8 @@ public class CategoryController implements CategoryApiDocs {
 
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<CommonResponse<Void>> deleteCategory(@PathVariable Long categoryId) {
+        // 카테고리 안에 게시글이 존재하면 어떻게 처리할 것인가????????
+        categoryService.deleteById(categoryId);
         return ResponseEntity.noContent().build();
     }
 }

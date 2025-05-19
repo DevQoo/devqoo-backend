@@ -54,4 +54,12 @@ public class CategoryService {
         return categoryRepository.findById(categoryId)
             .orElseThrow(() -> new BusinessException(CATEGORY_NOT_FOUND));
     }
+<<<<<<< Updated upstream
+=======
+
+    @Transactional
+    public void deleteById(Long categoryId) {
+        categoryRepository.deleteById(categoryId);
+    }
+>>>>>>> Stashed changes
 }
