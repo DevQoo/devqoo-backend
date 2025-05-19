@@ -33,6 +33,18 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
+    @Transactional
+    public Category update(Long categoryId, RegisterCategoryForm registerCategoryForm) {
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+        String categoryName = registerCategoryForm.categoryName();
+        if (categoryRepository.existsByCategoryName(categoryName)) {
+            throw new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED);
+        }
+        category.update(categoryName);
+        return category;
+    }
+
     /*
      * 조회 (categoryId 기준)
      * 존재 하지 않으면 BusinessException 발생
@@ -41,5 +53,11 @@ public class CategoryService {
     public Category findById(Long categoryId) {
         return categoryRepository.findById(categoryId)
             .orElseThrow(() -> new BusinessException(CATEGORY_NOT_FOUND));
+    }
+
+    // TODO 소프트 삭제, 하드 삭제 구현 여부 상의하기
+    @Transactional
+    public void deleteById(Long categoryId) {
+        categoryRepository.deleteById(categoryId);
     }
 }
