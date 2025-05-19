@@ -21,9 +21,7 @@ public class CategoryService {
     @Transactional
     public Category create(RegisterCategoryForm registerCategoryForm) {
         String categoryName = registerCategoryForm.categoryName();
-        if (categoryRepository.existsByCategoryName(categoryName)) {
-            throw new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED);
-        }
+        validateCategoryName(categoryName);
         Category category = new Category(categoryName);
         return categoryRepository.save(category);
     }
@@ -35,14 +33,17 @@ public class CategoryService {
 
     @Transactional
     public Category update(Long categoryId, RegisterCategoryForm registerCategoryForm) {
-        Category category = categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+        Category category = findById(categoryId);
         String categoryName = registerCategoryForm.categoryName();
+        validateCategoryName(categoryName);
+        category.update(categoryName);
+        return category;
+    }
+
+    private void validateCategoryName(String categoryName) {
         if (categoryRepository.existsByCategoryName(categoryName)) {
             throw new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED);
         }
-        category.update(categoryName);
-        return category;
     }
 
     /*
