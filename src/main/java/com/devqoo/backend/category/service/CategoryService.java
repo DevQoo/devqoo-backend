@@ -54,4 +54,10 @@ public class CategoryService {
         return categoryRepository.findById(categoryId)
             .orElseThrow(() -> new BusinessException(CATEGORY_NOT_FOUND));
     }
+
+    // TODO 소프트 삭제, 하드 삭제 구현 여부 상의하기
+    @Transactional
+    public void deleteById(Long categoryId) {
+        categoryRepository.deleteById(categoryId);
+    }
 }
