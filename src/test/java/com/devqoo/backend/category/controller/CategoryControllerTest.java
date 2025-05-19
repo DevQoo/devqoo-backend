@@ -1,7 +1,9 @@
 package com.devqoo.backend.category.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -20,7 +22,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -56,7 +60,7 @@ class CategoryControllerTest {
         RegisterCategoryForm form = new RegisterCategoryForm(categoryName);
         CategoryResponseDto responseDto = new CategoryResponseDto(categoryId, categoryName);
 
-        given(categoryFacade.createCategory(ArgumentMatchers.any(RegisterCategoryForm.class))).willReturn(responseDto);
+        given(categoryFacade.createCategory(any(RegisterCategoryForm.class))).willReturn(responseDto);
 
         // when && then
         mockMvc.perform(post("/api/categories").contentType(MediaType.APPLICATION_JSON)
@@ -118,8 +122,8 @@ class CategoryControllerTest {
         CategoryResponseDto responseDto = new CategoryResponseDto(categoryId, categoryName);
 
         given(categoryFacade.updateCategory(
-            ArgumentMatchers.anyLong(),
-            ArgumentMatchers.any(RegisterCategoryForm.class)
+            anyLong(),
+            any(RegisterCategoryForm.class)
         )).willReturn(responseDto);
 
         // when && then
@@ -136,8 +140,8 @@ class CategoryControllerTest {
         long categoryId = 1L;
         RegisterCategoryForm form = new RegisterCategoryForm(CATEGORY_NAME);
         given(categoryFacade.updateCategory(
-            ArgumentMatchers.anyLong(),
-            ArgumentMatchers.any(RegisterCategoryForm.class)
+            anyLong(),
+            any(RegisterCategoryForm.class)
         )).willThrow(new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
         // when & then
@@ -155,8 +159,8 @@ class CategoryControllerTest {
         long categoryId = 1L;
         RegisterCategoryForm form = new RegisterCategoryForm(CATEGORY_NAME);
         given(categoryFacade.updateCategory(
-            ArgumentMatchers.anyLong(),
-            ArgumentMatchers.any(RegisterCategoryForm.class)
+            anyLong(),
+            any(RegisterCategoryForm.class)
         )).willThrow(new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED));
 
         // when & then
@@ -164,6 +168,25 @@ class CategoryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(form))).andExpect(status().isConflict())
             .andExpect(jsonPath("$.errorMessageList[0]").value(ErrorCode.CATEGORY_NAME_DUPLICATED.getMessage()))
+            .andDo(print());
+    }
+
+    @DisplayName("PATCH /api/categories/{categoryId} - 유효하지 않은 카테고리 이름은 2글자 제한 400 반환")
+    @ParameterizedTest
+    @ValueSource(strings = {"일"})
+    @NullAndEmptySource
+    void shouldReturn400_whenRequestIsInvalid(String invalidNewName) throws Exception {
+        // given
+        Long categoryId = 1L;
+        RegisterCategoryForm requestDto = new RegisterCategoryForm(invalidNewName);
+        when(categoryFacade.updateCategory(anyLong(), any(RegisterCategoryForm.class)))
+            .thenThrow(new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED));
+
+        // when & then
+        mockMvc.perform(patch("/api/categories/" + categoryId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            .andExpect(status().isBadRequest())
             .andDo(print());
     }
 }
