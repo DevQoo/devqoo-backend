@@ -3,7 +3,6 @@ package com.devqoo.backend.category.controller;
 import com.devqoo.backend.category.dto.form.RegisterCategoryForm;
 import com.devqoo.backend.category.dto.response.CategoryResponseDto;
 import com.devqoo.backend.category.service.CategoryFacade;
-import com.devqoo.backend.category.service.CategoryService;
 import com.devqoo.backend.common.response.CommonResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -26,7 +25,6 @@ public class CategoryController implements CategoryApiDocs {
 
     // TODO : API 호출 시 관리자만 호출 할 수 있도록 권한 설정 필요 - 조회 제외
     private final CategoryFacade categoryFacade;
-    private final CategoryService categoryService;
 
     @PostMapping
     public ResponseEntity<CommonResponse<CategoryResponseDto>> createCategory(
@@ -59,7 +57,7 @@ public class CategoryController implements CategoryApiDocs {
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<CommonResponse<Void>> deleteCategory(@PathVariable Long categoryId) {
         // 카테고리 안에 게시글이 존재하면 어떻게 처리할 것인가????????
-        categoryService.deleteById(categoryId);
+        categoryFacade.deleteById(categoryId);
         return ResponseEntity.noContent().build();
     }
 }
