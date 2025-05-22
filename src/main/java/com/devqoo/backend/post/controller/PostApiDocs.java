@@ -1,7 +1,7 @@
 package com.devqoo.backend.post.controller;
 
 import com.devqoo.backend.common.response.CommonResponse;
-import com.devqoo.backend.post.dto.form.PostRegisterForm;
+import com.devqoo.backend.post.dto.form.PostForm;
 import com.devqoo.backend.post.dto.response.PostResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,9 +15,14 @@ public interface PostApiDocs {
 
     // 게시글 생성
     @Operation(summary = "게시글 작성", description = "게시글을 생성합니다.")
-    ResponseEntity<CommonResponse<Long>> createPost(@RequestBody @Valid PostRegisterForm postRegisterForm);
+    ResponseEntity<CommonResponse<Long>> createPost(@RequestBody @Valid PostForm postForm);
+
+    // 게시글 수정
+    @Operation(summary = "게시글 수정", description = "해당 게시글의 내용을 수정합니다.")
+    ResponseEntity<CommonResponse<Long>> updatePost(@PathVariable Long postId, @RequestBody @Valid PostForm postForm);
 
     // 게시글 상세 조회
     @Operation(summary = "게시글 상세 조회", description = "해당 게시글의 내용을 상세 조회합니다.")
     ResponseEntity<CommonResponse<PostResponseDto>> getPostDetail(@PathVariable Long postId);
+
 }

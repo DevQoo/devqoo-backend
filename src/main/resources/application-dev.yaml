@@ -4,3 +4,9 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+logging:
+  level:
+    root: INFO
+    com.devqoo.backend: DEBUG
+    org.springframework: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
