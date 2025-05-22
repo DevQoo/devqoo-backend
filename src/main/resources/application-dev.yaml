@@ -9,5 +9,4 @@ logging:
     root: INFO
     com.devqoo.backend: DEBUG
     org.springframework: INFO
-    org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
