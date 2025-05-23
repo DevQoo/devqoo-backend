@@ -1,11 +1,16 @@
 package com.devqoo.backend.user.service;
 
+import static com.devqoo.backend.common.exception.ErrorCode.EMAIL_ALREADY_EXISTS;
+import static com.devqoo.backend.common.exception.ErrorCode.NICKNAME_ALREADY_EXISTS;
 import static com.devqoo.backend.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.devqoo.backend.common.exception.BusinessException;
+import com.devqoo.backend.user.dto.form.SignUpForm;
 import com.devqoo.backend.user.entity.User;
+import com.devqoo.backend.user.enums.UserRoleType;
 import com.devqoo.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +19,28 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
+
+    // 회원가입
+    @Transactional
+    public void signUp(SignUpForm signUpForm) {
+
+        // 이메일, 닉네임 중복 확인
+        validateEmail(signUpForm.getEmail());
+        validateNickname(signUpForm.getNickName());
+
+        // 회원 가입
+        User user = User.builder()
+            .email(signUpForm.getEmail())
+            .nickname(signUpForm.getNickName())
+            .password(passwordEncoder.encode(signUpForm.getPassword()))
+            .profileUrl(null) // S3 개발 후 수정
+            .role(UserRoleType.STUDENT)
+            .build();
+
+        userRepository.save(user);
+    }
 
     /*
      * 조회 (userId 기준)
@@ -24,5 +50,23 @@ public class UserService {
     public User findById(Long userId) {
         return userRepository.findById(userId)
             .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+    }
+
+    // 이메일 중복 확인
+    @Transactional(readOnly = true)
+    public void validateEmail(String email) {
+
+        if (userRepository.existsByEmail(email)) {
+            throw new BusinessException(EMAIL_ALREADY_EXISTS);
+        }
+    }
+
+    // 닉네임 중복 확인
+    @Transactional(readOnly = true)
+    public void validateNickname(String nickname) {
+
+        if (userRepository.existsByNickname(nickname)) {
+            throw new BusinessException(NICKNAME_ALREADY_EXISTS);
+        }
     }
 }
