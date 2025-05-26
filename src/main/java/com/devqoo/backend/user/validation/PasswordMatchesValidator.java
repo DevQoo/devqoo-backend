@@ -19,23 +19,26 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
     @Override
     public boolean isValid(SignUpForm signUpForm, ConstraintValidatorContext context) {
 
-        String password = signUpForm.getPassword();
-        String passwordConfirm = signUpForm.getPasswordConfirm();
+        String password = signUpForm.password();
+        String passwordConfirm = signUpForm.passwordConfirm();
 
-        if (password.isEmpty() || passwordConfirm.isEmpty() || password.equals(passwordConfirm)) {
+        if (password.equals(passwordConfirm)) {
             return true;
-        } else {
-
-            // Object Error 메시지 막기
-            context.disableDefaultConstraintViolation();
-
-            // Custom 메시지 설정
-            context
-                .buildConstraintViolationWithTemplate(message)
-                .addPropertyNode(fieldName)
-                .addConstraintViolation();
-
-            return false;
         }
+
+        addViolation(context);
+        return false;
+    }
+
+    private void addViolation(ConstraintValidatorContext context) {
+
+        // Object Error 메시지 막기
+        context.disableDefaultConstraintViolation();
+
+        // Custom 메시지 설정
+        context
+            .buildConstraintViolationWithTemplate(message)
+            .addPropertyNode(fieldName)
+            .addConstraintViolation();
     }
 }

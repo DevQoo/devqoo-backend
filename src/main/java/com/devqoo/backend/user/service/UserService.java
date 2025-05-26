@@ -27,14 +27,14 @@ public class UserService {
     public void signUp(SignUpForm signUpForm) {
 
         // 이메일, 닉네임 중복 확인
-        validateEmail(signUpForm.getEmail());
-        validateNickname(signUpForm.getNickName());
+        validateEmail(signUpForm.email());
+        validateNickname(signUpForm.nickName());
 
         // 회원 가입
         User user = User.builder()
-            .email(signUpForm.getEmail())
-            .nickname(signUpForm.getNickName())
-            .password(passwordEncoder.encode(signUpForm.getPassword()))
+            .email(signUpForm.email())
+            .nickname(signUpForm.nickName())
+            .password(passwordEncoder.encode(signUpForm.password()))
             .profileUrl(null) // S3 개발 후 수정
             .role(UserRoleType.STUDENT)
             .build();
@@ -53,8 +53,7 @@ public class UserService {
     }
 
     // 이메일 중복 확인
-    @Transactional(readOnly = true)
-    public void validateEmail(String email) {
+    private void validateEmail(String email) {
 
         if (userRepository.existsByEmail(email)) {
             throw new BusinessException(EMAIL_ALREADY_EXISTS);
@@ -62,8 +61,7 @@ public class UserService {
     }
 
     // 닉네임 중복 확인
-    @Transactional(readOnly = true)
-    public void validateNickname(String nickname) {
+    private void validateNickname(String nickname) {
 
         if (userRepository.existsByNickname(nickname)) {
             throw new BusinessException(NICKNAME_ALREADY_EXISTS);

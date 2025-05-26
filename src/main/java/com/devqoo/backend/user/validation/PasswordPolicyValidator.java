@@ -2,8 +2,15 @@ package com.devqoo.backend.user.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import java.util.regex.Pattern;
 
 public class PasswordPolicyValidator implements ConstraintValidator<PasswordPolicy, String> {
+
+    private static final Pattern ALPHABET = Pattern.compile(".*[a-zA-Z].*");
+    private static final Pattern DIGIT = Pattern.compile(".*\\d.*");
+    private static final Pattern SPECIAL =
+        Pattern.compile(".*[!@#$%^&*()\\-_=+\\[{\\]}|;:'\",<.>/?`~\\\\].*");
+
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
@@ -12,20 +19,14 @@ public class PasswordPolicyValidator implements ConstraintValidator<PasswordPoli
             return false;
         }
 
-        boolean upper = password.matches(".*[A-Z].*");
-        boolean lower = password.matches(".*[a-z].*");
-        boolean digit = password.matches(".*\\d.*");
-        boolean special = password.matches(".*[!@#$%^&*()\\-_=+\\[{\\]}|;:'\",<.>/?`~\\\\].*");
-
         int count = 0;
-
-        if (upper || lower) {
+        if (ALPHABET.matcher(password).matches()) {
             count++;
         }
-        if (digit) {
+        if (DIGIT.matcher(password).matches()) {
             count++;
         }
-        if (special) {
+        if (SPECIAL.matcher(password).matches()) {
             count++;
         }
 
