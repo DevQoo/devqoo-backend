@@ -29,4 +29,8 @@ public class CategoryFacade {
         Category category = categoryService.update(categoryId, form);
         return new CategoryResponseDto(category);
     }
+
+    public void deleteById(Long categoryId) {
+        categoryService.deleteById(categoryId);
+    }
 }

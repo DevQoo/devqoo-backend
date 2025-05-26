@@ -75,4 +75,33 @@ class CategoryServiceTest {
         // then
         assertThat(category.getCategoryName()).isEqualTo(newCategoryName);
     }
+
+    // 수정 테스트 실패 테스트 not found, duplicate name
+    @DisplayName("update: 카테고리 수정 시 카테고리 이름이 중복되면 예외를 던진다")
+    @Test
+    void shouldThrowException_whenCategoryNameAlreadyExistsOnUpdate() {
+        // given
+        Category category = EntityProvider.createCategory(CATEGORY_NAME);
+        given(categoryRepository.findById(any())).willReturn(Optional.of(category));
+
+        String newCategoryName = "New Category Name";
+        RegisterCategoryForm form = new RegisterCategoryForm(newCategoryName);
+        given(categoryRepository.existsByCategoryName(form.categoryName())).willReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> categoryService.update(1L, form))
+            .isInstanceOf(BusinessException.class);
+    }
+
+    @DisplayName("update: 카테고리 수정 시 카테고리가 존재하지 않으면 예외를 던진다")
+    @Test
+    void shouldThrowException_whenCategoryDoesNotExistOnUpdate() {
+        // given
+        RegisterCategoryForm form = new RegisterCategoryForm(CATEGORY_NAME);
+        given(categoryRepository.findById(any())).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> categoryService.update(1L, form))
+            .isInstanceOf(BusinessException.class);
+    }
 }

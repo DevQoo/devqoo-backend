@@ -1,8 +1,11 @@
 package com.devqoo.backend.category.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,7 +22,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,6 +38,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @Import({SecurityConfig.class})
 class CategoryControllerTest {
 
+    public static final String CATEGORY_NAME = "질문 게시판";
     @Autowired
     private MockMvc mockMvc;
 
@@ -50,38 +56,32 @@ class CategoryControllerTest {
     void shouldCreateCategoryAndReturn201() throws Exception {
         // given
         long categoryId = 1L;
-        String categoryName = "질문 게시판";
+        String categoryName = CATEGORY_NAME;
         RegisterCategoryForm form = new RegisterCategoryForm(categoryName);
         CategoryResponseDto responseDto = new CategoryResponseDto(categoryId, categoryName);
 
-        given(categoryFacade.createCategory(ArgumentMatchers.any(RegisterCategoryForm.class)))
-            .willReturn(responseDto);
+        given(categoryFacade.createCategory(any(RegisterCategoryForm.class))).willReturn(responseDto);
 
         // when && then
-        mockMvc.perform(post("/api/categories")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(form)))
-            .andExpect(status().isCreated())
+        mockMvc.perform(post("/api/categories").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(form))).andExpect(status().isCreated())
             .andExpect(jsonPath("$.data.categoryId").value(categoryId))
-            .andExpect(jsonPath("$.data.categoryName").value(categoryName))
-            .andDo(print());
+            .andExpect(jsonPath("$.data.categoryName").value(categoryName)).andDo(print());
     }
 
     @DisplayName("POST /api/categories - 카테고리 생성 실패")
     @Test
     void writeHereTestName() throws Exception {
         // given
-        String categoryName = "질문 게시판";
+        String categoryName = CATEGORY_NAME;
         RegisterCategoryForm form = new RegisterCategoryForm(categoryName);
 
-        given(categoryFacade.createCategory(any()))
-            .willThrow(new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED));
+        given(categoryFacade.createCategory(any())).willThrow(
+            new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED));
         // when && then
 
-        mockMvc.perform(post("/api/categories")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(form)))
-            .andExpect(status().isConflict())
+        mockMvc.perform(post("/api/categories").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(form))).andExpect(status().isConflict())
             .andExpect(jsonPath("$.errorMessageList[0]").value(ErrorCode.CATEGORY_NAME_DUPLICATED.getMessage()))
             .andDo(print());
 
@@ -94,30 +94,99 @@ class CategoryControllerTest {
         RegisterCategoryForm form = new RegisterCategoryForm("");
 
         // when && then
-        mockMvc.perform(post("/api/categories")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(form)))
-            .andExpect(status().isBadRequest())
-            .andDo(print());
+        mockMvc.perform(post("/api/categories").contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(form))).andExpect(status().isBadRequest()).andDo(print());
     }
 
     @DisplayName("GET /api/categories - 카테고리 목록 조회")
     @Test
     void shouldReturnCategoryList() throws Exception {
         // given
-        List<CategoryResponseDto> responseDtos = List.of(
-            new CategoryResponseDto(1L, "질문 게시판"),
-            new CategoryResponseDto(2L, "자유 게시판")
-        );
+        List<CategoryResponseDto> responseDtos = List.of(new CategoryResponseDto(1L, CATEGORY_NAME),
+            new CategoryResponseDto(2L, "자유 게시판"));
         given(categoryFacade.getCategories()).willReturn(responseDtos);
 
         // when && then
-        mockMvc.perform(get("/api/categories")
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data").isArray())
-            .andExpect(jsonPath("$.data.length()").value(2))
-            .andDo(print());
+        mockMvc.perform(get("/api/categories").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+            .andExpect(jsonPath("$.data").isArray()).andExpect(jsonPath("$.data.length()").value(2)).andDo(print());
 
+    }
+
+    @DisplayName("PATCH /api/categories/{categoryId} - 카테고리 수정")
+    @Test
+    void shouldUpdateCategoryNameAndReturn200() throws Exception {
+        // given
+        long categoryId = 1L;
+        String categoryName = CATEGORY_NAME;
+        RegisterCategoryForm form = new RegisterCategoryForm(categoryName);
+        CategoryResponseDto responseDto = new CategoryResponseDto(categoryId, categoryName);
+
+        given(categoryFacade.updateCategory(
+            anyLong(),
+            any(RegisterCategoryForm.class)
+        )).willReturn(responseDto);
+
+        // when && then
+        mockMvc.perform(patch("/api/categories/{categoryId}", categoryId).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(form))).andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.categoryId").value(categoryId))
+            .andExpect(jsonPath("$.data.categoryName").value(categoryName)).andDo(print());
+    }
+
+    @DisplayName("PATCH /api/categories/{categoryId} - 카테고리 수정 실패 - Not Found")
+    @Test
+    void shouldUpdateCategoryNameAndReturn404() throws Exception {
+        // given
+        long categoryId = 1L;
+        RegisterCategoryForm form = new RegisterCategoryForm(CATEGORY_NAME);
+        given(categoryFacade.updateCategory(
+            anyLong(),
+            any(RegisterCategoryForm.class)
+        )).willThrow(new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        // when & then
+        mockMvc.perform(patch("/api/categories/{categoryId}", categoryId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(form))).andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.errorMessageList[0]").value(ErrorCode.CATEGORY_NOT_FOUND.getMessage()))
+            .andDo(print());
+    }
+
+    @DisplayName("PATCH /api/categories/{categoryId} - 카테고리 수정 실패 - 중복된 카테고리 이름")
+    @Test
+    void shouldUpdateCategoryNameAndReturn409() throws Exception {
+        // given
+        long categoryId = 1L;
+        RegisterCategoryForm form = new RegisterCategoryForm(CATEGORY_NAME);
+        given(categoryFacade.updateCategory(
+            anyLong(),
+            any(RegisterCategoryForm.class)
+        )).willThrow(new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED));
+
+        // when & then
+        mockMvc.perform(patch("/api/categories/{categoryId}", categoryId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(form))).andExpect(status().isConflict())
+            .andExpect(jsonPath("$.errorMessageList[0]").value(ErrorCode.CATEGORY_NAME_DUPLICATED.getMessage()))
+            .andDo(print());
+    }
+
+    @DisplayName("PATCH /api/categories/{categoryId} - 유효하지 않은 카테고리 이름은 2글자 제한 400 반환")
+    @ParameterizedTest
+    @ValueSource(strings = {"일"})
+    @NullAndEmptySource
+    void shouldReturn400_whenRequestIsInvalid(String invalidNewName) throws Exception {
+        // given
+        Long categoryId = 1L;
+        RegisterCategoryForm requestDto = new RegisterCategoryForm(invalidNewName);
+        when(categoryFacade.updateCategory(anyLong(), any(RegisterCategoryForm.class)))
+            .thenThrow(new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED));
+
+        // when & then
+        mockMvc.perform(patch("/api/categories/" + categoryId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            .andExpect(status().isBadRequest())
+            .andDo(print());
     }
 }
