@@ -74,9 +74,6 @@ public class JwtProvider {
     public boolean validateToken(String token, SecretKeyType secretKeyType) {
 
         try {
-
-								 
-				   
             if (!StringUtils.hasText(token)) {
                 return false;
             }
@@ -93,7 +90,7 @@ public class JwtProvider {
             return false;
         }
     }
-    
+
     // JWT 토큰에서 사용자 정보를 추출하여 Spring Security 의 Authentication 객체로 변환
     public Authentication getAuthentication(String token, SecretKeyType secretKeyType) {
 
