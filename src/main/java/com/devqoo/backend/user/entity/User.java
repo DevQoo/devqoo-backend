@@ -1,8 +1,11 @@
 package com.devqoo.backend.user.entity;
 
 import com.devqoo.backend.common.entity.BaseTimeEntity;
+import com.devqoo.backend.user.enums.UserRoleType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,11 +39,14 @@ public class User extends BaseTimeEntity {
     private String profileUrl;
 
     @Column(name = "role", nullable = false, length = 10)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private UserRoleType role;
 
 
     @Builder
-    public User(String nickname, String email, String password, String profileUrl, String role) {
+    public User(
+        String nickname, String email, String password, String profileUrl, UserRoleType role
+    ) {
         this.nickname = nickname;
         this.email = email;
         this.password = password;
