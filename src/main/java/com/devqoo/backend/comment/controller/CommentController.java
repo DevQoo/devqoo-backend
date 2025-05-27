@@ -9,6 +9,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +30,7 @@ public class CommentController implements CommentApiDocs {
     }
 
     @Override
+    @PostMapping
     public ResponseEntity<CommonResponse<Long>> createComment(@RequestBody @Valid RegisterCommentForm form) {
         Comment comment = commentService.createComment(form);
         int statusCode = HttpStatus.CREATED.value();
@@ -34,12 +39,14 @@ public class CommentController implements CommentApiDocs {
     }
 
     @Override
-    public ResponseEntity<CommonResponse<Long>> updateComment(Long commentId, RegisterCommentForm form) {
+    @PatchMapping("/{commentId}")
+    public ResponseEntity<CommonResponse<Long>> updateComment(@PathVariable Long commentId, RegisterCommentForm form) {
         return null;
     }
 
     @Override
-    public ResponseEntity<Void> deleteComment(Long commentId) {
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
         return null;
     }
 
