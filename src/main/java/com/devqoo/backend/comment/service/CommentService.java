@@ -25,16 +25,13 @@ public class CommentService {
     // 댓글 생성
     public Comment createComment(RegisterCommentForm form) {
         // entity 생성 필요 : POST USER CONTENT
-        Long authorId = form.authorId();
-        User foundUser = userRepository.findById(authorId)
+        User foundUser = userRepository.findById(form.authorId())
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Long postId = form.postId();
-        Post foundPost = postRepository.findById(postId)
+        Post foundPost = postRepository.findById(form.postId())
             .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        String content = form.content();
-        Comment comment = new Comment(foundPost, foundUser, content);
+        Comment comment = new Comment(foundPost, foundUser, form.content());
         return commentRepository.save(comment);
     }
 
