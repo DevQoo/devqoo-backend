@@ -3,6 +3,7 @@ package com.devqoo.backend.provider;
 import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.post.entity.Post;
 import com.devqoo.backend.user.entity.User;
+import com.devqoo.backend.user.enums.UserRoleType;
 
 public abstract class EntityProvider {
 
@@ -16,7 +17,7 @@ public abstract class EntityProvider {
             .password("password")
             .nickname("nickname")
             .profileUrl("profileUrl")
-            .role("ROLE_USER")
+            .role(UserRoleType.STUDENT)
             .build();
     }
 
