@@ -21,6 +21,10 @@ public interface PostApiDocs {
     @Operation(summary = "게시글 수정", description = "해당 게시글의 내용을 수정합니다.")
     ResponseEntity<CommonResponse<Long>> updatePost(@PathVariable Long postId, @RequestBody @Valid PostForm postForm);
 
+    // 게시글 삭제
+    @Operation(summary = "게시글 삭제", description = "해당 게시글을 삭제합니다.")
+    ResponseEntity<CommonResponse<Void>> deletePost(@PathVariable Long postId);
+
     // 게시글 상세 조회
     @Operation(summary = "게시글 상세 조회", description = "해당 게시글의 내용을 상세 조회합니다.")
     ResponseEntity<CommonResponse<PostResponseDto>> getPostDetail(@PathVariable Long postId);
