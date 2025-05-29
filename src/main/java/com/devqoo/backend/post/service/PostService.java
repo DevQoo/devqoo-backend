@@ -81,6 +81,18 @@ public class PostService {
         return post.getPostId();
     }
 
+    // 게시글 삭제
+    @Transactional
+    public void deletePost(Long postId) {
+        log.debug("====> postService deletePost in");
+
+        Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(POST_NOT_FOUND));
+
+        // 삭제
+        postRepository.delete(post);
+    }
+
     // 게시글 상세 조회
     @Transactional(readOnly = true)
     public PostResponseDto getPostDetail(Long postId) {

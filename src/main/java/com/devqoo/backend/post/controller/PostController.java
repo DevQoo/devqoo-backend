@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,10 +39,9 @@ public class PostController implements PostApiDocs {
     }
 
     // 게시글 수정
-    @Override
     @PutMapping("/{postId}")
     public ResponseEntity<CommonResponse<Long>> updatePost(@PathVariable Long postId,
-        @RequestBody PostForm postForm) {
+        @RequestBody @Valid PostForm postForm) {
 
         Long updatePostId = postService.updatePost(postId, postForm);
 
@@ -49,8 +49,16 @@ public class PostController implements PostApiDocs {
             .body(CommonResponse.success(HttpStatus.OK.value(), updatePostId));
     }
 
+    // 게시글 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<CommonResponse<Void>> deletePost(@PathVariable Long postId) {
+
+        postService.deletePost(postId);
+
+        return ResponseEntity.noContent().build();
+    }
+
     // 게시글 상세 조회
-    @Override
     @GetMapping("/{postId}")
     public ResponseEntity<CommonResponse<PostResponseDto>> getPostDetail(@PathVariable Long postId) {
 
