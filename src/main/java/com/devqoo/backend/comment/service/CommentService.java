@@ -11,6 +11,7 @@ import com.devqoo.backend.user.entity.User;
 import com.devqoo.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class CommentService {
     // 댓글 목록 조회
 
     // 댓글 생성
+    @Transactional
     public Comment createComment(RegisterCommentForm form) {
         // entity 생성 필요 : POST USER CONTENT
         User foundUser = userRepository.findById(form.authorId())
@@ -36,6 +38,7 @@ public class CommentService {
     }
 
     // 댓글 수정
+    @Transactional
     public void updateComment(Long commentId, RegisterCommentForm form) {
         Comment foundComment = commentRepository.findById(commentId)
             .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
@@ -50,6 +53,6 @@ public class CommentService {
         foundComment.validatePost(post);
         foundComment.updateContent(form.content());
     }
-    
+
     // 댓글 삭제
 }
