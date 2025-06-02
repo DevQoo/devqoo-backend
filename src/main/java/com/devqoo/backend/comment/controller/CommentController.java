@@ -35,9 +35,9 @@ public class CommentController implements CommentApiDocs {
     @PostMapping
     public ResponseEntity<CommonResponse<Long>> createComment(@RequestBody @Valid RegisterCommentForm form) {
         Comment comment = commentService.createComment(form);
-        int statusCode = HttpStatus.CREATED.value();
-        CommonResponse<Long> response = CommonResponse.success(statusCode, comment.getCommentId());
-        return ResponseEntity.status(statusCode).body(response);
+        int createdCode = HttpStatus.CREATED.value();
+        CommonResponse<Long> response = CommonResponse.success(createdCode, comment.getCommentId());
+        return ResponseEntity.status(createdCode).body(response);
     }
 
     @Override
