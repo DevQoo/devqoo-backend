@@ -36,6 +36,20 @@ public class CommentService {
     }
 
     // 댓글 수정
+    public void updateComment(Long commentId, RegisterCommentForm form) {
+        Comment foundComment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
 
+        User user = userRepository.findById(form.authorId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Post post = postRepository.findById(form.postId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+
+        foundComment.validateAuthor(user);
+        foundComment.validatePost(post);
+        foundComment.updateContent(form.content());
+    }
+    
     // 댓글 삭제
 }
