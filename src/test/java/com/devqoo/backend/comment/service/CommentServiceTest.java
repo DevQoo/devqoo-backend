@@ -165,7 +165,6 @@ class CommentServiceTest {
             Category category = EntityProvider.createCategory("질문 게시판");
             User user = UserFixture.createUser();
             Post post = EntityProvider.createPost(user, category);
-            Comment comment = EntityProvider.createComment(post, user, COMMENT_CONTENT);
 
             given(commentRepository.findWithAuthorAndPostById(any()))
                 .willReturn(Optional.of(EntityProvider.createComment(post, user, COMMENT_CONTENT)));
