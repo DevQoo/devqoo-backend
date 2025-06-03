@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class AuthService {
 
 
     // 로그인
+    @Transactional(readOnly = true)
     public TokenResponseDto signIn(SignInForm signInForm) {
 
         User user = userRepository.findByEmail(signInForm.email())
