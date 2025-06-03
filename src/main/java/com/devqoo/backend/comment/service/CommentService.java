@@ -40,7 +40,7 @@ public class CommentService {
     // 댓글 수정
     @Transactional
     public void updateComment(Long commentId, RegisterCommentForm form) {
-        Comment foundComment = commentRepository.findById(commentId)
+        Comment foundComment = commentRepository.findWithAuthorAndPostById(commentId)
             .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
 
         User user = userRepository.findById(form.authorId())
