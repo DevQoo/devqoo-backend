@@ -22,6 +22,7 @@ public enum ErrorCode {
     MISSING_PARAMETER(HttpStatus.BAD_REQUEST, "필수 요청 파라미터가 누락되었습니다."),
     TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "요청 파라미터 타입이 올바르지 않습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 오류가 발생했습니다."),
+    INVALID_ENUM_VALUE(HttpStatus.BAD_REQUEST, "유효하지 않은 열거형 값입니다."),
 
     // ======== 비즈니스 오류 =========
     // ======== 게시글 =========

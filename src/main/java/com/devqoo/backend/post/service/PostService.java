@@ -8,11 +8,15 @@ import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.category.repository.CategoryRepository;
 import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.post.dto.form.PostForm;
+import com.devqoo.backend.post.dto.response.CursorPageResponse;
 import com.devqoo.backend.post.dto.response.PostResponseDto;
 import com.devqoo.backend.post.entity.Post;
+import com.devqoo.backend.post.enums.PostSortField;
+import com.devqoo.backend.post.enums.SortDirection;
 import com.devqoo.backend.post.repository.PostRepository;
 import com.devqoo.backend.user.entity.User;
 import com.devqoo.backend.user.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -104,4 +108,32 @@ public class PostService {
         return PostResponseDto.from(post);
     }
 
+    // 게시글 조회 + 검색
+    @Transactional(readOnly = true)
+    public CursorPageResponse<PostResponseDto> getPostsByCursor(
+        String keyword, String searchType, PostSortField sortField, SortDirection direction,
+        Long lastPostId, int lastViewCount, int size)
+    {
+        log.debug("====> postService getPostsByCursor in");
+        
+        // 조회
+        List<Post> postList =
+            postRepository.searchPostsByCursor(keyword, searchType, sortField, direction,
+                lastPostId, lastViewCount, size + 1);
+
+        // 다음 게시글 있는지 확인
+        boolean hasNext = postList.size() > size;
+        if (hasNext) {
+            postList.remove(size);  // 초과된 1개 제거
+        }
+
+        // 다음 postId
+        Long nextPostId = postList.isEmpty() ? null : postList.get(postList.size() - 1).getPostId();
+
+        List<PostResponseDto> content = postList.stream()
+            .map(PostResponseDto::from)
+            .toList();
+
+        return CursorPageResponse.of(content, nextPostId, hasNext);
+    }
 }
