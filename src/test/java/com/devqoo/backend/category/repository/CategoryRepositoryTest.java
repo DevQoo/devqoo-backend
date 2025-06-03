@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.common.config.JpaAuditingConfiguration;
+import com.devqoo.backend.common.config.QuerydslConfig;
 import com.devqoo.backend.provider.EntityProvider;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -16,7 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
-@Import(JpaAuditingConfiguration.class)
+@Import({JpaAuditingConfiguration.class, QuerydslConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 class CategoryRepositoryTest {
