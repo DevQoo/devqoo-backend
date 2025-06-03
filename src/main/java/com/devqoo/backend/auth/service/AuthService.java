@@ -36,7 +36,11 @@ public class AuthService {
         String refreshToken =
             jwtProvider.generateRefreshToken(user.getUserId(), user.getEmail(), user.getRole());
 
-        authRepository.saveRefreshToken(user.getUserId(), refreshToken, refreshExpireTime);
+        try {
+            authRepository.saveRefreshToken(user.getUserId(), refreshToken, refreshExpireTime);
+        } catch (RuntimeException ex) {
+            throw new BusinessException(ErrorCode.REDIS_EXCEPTION);
+        }
 
         String accessToken =
             jwtProvider.generateAccessToken(user.getUserId(), user.getEmail(), user.getRole());

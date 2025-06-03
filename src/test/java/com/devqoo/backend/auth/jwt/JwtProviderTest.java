@@ -43,11 +43,6 @@ class JwtProviderTest {
         assertEquals(String.valueOf(userId), claims.getSubject());
         assertEquals(email, claims.get("email"));
         assertEquals(role, UserRoleType.valueOf((String) claims.get("role")));
-
-        System.out.println("token: " + token);
-        System.out.println("userId : " + claims.getSubject());
-        System.out.println("email : " + claims.get("email"));
-        System.out.println("role : " + claims.get("role"));
     }
 
     @Test
@@ -65,10 +60,5 @@ class JwtProviderTest {
         assertEquals(String.valueOf(userId), claims.getSubject());
         assertEquals(email, claims.get("email"));
         assertEquals(role, UserRoleType.valueOf((String) claims.get("role")));
-
-        System.out.println("token: " + token);
-        System.out.println("userId : " + claims.getSubject());
-        System.out.println("email : " + claims.get("email"));
-        System.out.println("role : " + claims.get("role"));
     }
 }
