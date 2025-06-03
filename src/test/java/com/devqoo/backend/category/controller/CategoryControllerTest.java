@@ -73,8 +73,7 @@ class CategoryControllerTest {
     @Test
     void writeHereTestName() throws Exception {
         // given
-        String categoryName = CATEGORY_NAME;
-        RegisterCategoryForm form = new RegisterCategoryForm(categoryName);
+        RegisterCategoryForm form = new RegisterCategoryForm(CATEGORY_NAME);
 
         given(categoryFacade.createCategory(any())).willThrow(
             new BusinessException(ErrorCode.CATEGORY_NAME_DUPLICATED));

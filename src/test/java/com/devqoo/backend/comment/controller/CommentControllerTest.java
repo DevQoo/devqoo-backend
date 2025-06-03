@@ -17,6 +17,7 @@ import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.common.exception.ErrorCode;
 import com.devqoo.backend.post.entity.Post;
 import com.devqoo.backend.provider.EntityProvider;
+import com.devqoo.backend.provider.UserFixture;
 import com.devqoo.backend.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.stream.Stream;
@@ -61,7 +62,7 @@ class CommentControllerTest {
             String json = objectMapper.writeValueAsString(form);
 
             // Test Fixture Entities
-            User user = EntityProvider.createUser();
+            User user = UserFixture.createUser();
             Category category = EntityProvider.createCategory("Test Category");
             Post post = EntityProvider.createPost(user, category);
             Comment comment = EntityProvider.createComment(post, user, form.content());
