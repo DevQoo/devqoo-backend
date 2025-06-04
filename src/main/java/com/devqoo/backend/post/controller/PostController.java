@@ -2,7 +2,10 @@ package com.devqoo.backend.post.controller;
 
 import com.devqoo.backend.common.response.CommonResponse;
 import com.devqoo.backend.post.dto.form.PostForm;
+import com.devqoo.backend.post.dto.response.CursorPageResponse;
 import com.devqoo.backend.post.dto.response.PostResponseDto;
+import com.devqoo.backend.post.enums.PostSortField;
+import com.devqoo.backend.post.enums.SortDirection;
 import com.devqoo.backend.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -28,7 +32,6 @@ public class PostController implements PostApiDocs {
 
 
     // 게시글 생성
-    @Override
     @PostMapping
     public ResponseEntity<CommonResponse<Long>> createPost(@RequestBody @Valid PostForm postForm) {
 
@@ -68,4 +71,24 @@ public class PostController implements PostApiDocs {
             .body(CommonResponse.success(HttpStatus.OK.value(), postDto));
     }
 
+    // 게시글 조회 + 검색
+    @GetMapping
+    public ResponseEntity<CommonResponse<CursorPageResponse<PostResponseDto>>> getPostsByCursor(
+        @RequestParam(required = false) String keyword,
+        @RequestParam(required = false, defaultValue = "title") String searchType,
+        @RequestParam(defaultValue = "POST_ID") PostSortField sortField,
+        @RequestParam(defaultValue = "DESC") SortDirection direction,
+        @RequestParam(required = false) Long lastPostId,
+        @RequestParam(defaultValue = "-1") int lastViewCount,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+
+        CursorPageResponse<PostResponseDto> response = postService.getPostsByCursor(
+            keyword, searchType, sortField, direction,
+            lastPostId, lastViewCount, size
+        );
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(CommonResponse.success(HttpStatus.OK.value(), response));
+    }
 }

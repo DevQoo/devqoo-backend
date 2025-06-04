@@ -3,6 +3,7 @@ package com.devqoo.backend.auth.jwt;
 import com.devqoo.backend.auth.security.CustomUserDetails;
 import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.common.exception.ErrorCode;
+import com.devqoo.backend.user.enums.UserRoleType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -43,18 +44,18 @@ public class JwtProvider {
     }
 
     // Access Token 발급
-    public String generateAccessToken(Long userId, String email, String role) {
+    public String generateAccessToken(Long userId, String email, UserRoleType role) {
         return createToken(userId, email, role, accessExpireTime, accessKey);
     }
 
     // Refresh Token 발급
-    public String generateRefreshToken(Long userId, String email, String role) {
+    public String generateRefreshToken(Long userId, String email, UserRoleType role) {
         return createToken(userId, email, role, refreshExpireTime, refreshKey);
     }
 
     // Token 생성
     private String createToken(
-        Long userId, String email, String role, int expireTime, SecretKey secretKey
+        Long userId, String email, UserRoleType role, int expireTime, SecretKey secretKey
     ) {
 
         Instant now = Instant.now();
