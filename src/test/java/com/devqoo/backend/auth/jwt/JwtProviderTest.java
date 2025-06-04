@@ -2,6 +2,7 @@ package com.devqoo.backend.auth.jwt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.devqoo.backend.user.enums.UserRoleType;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ class JwtProviderTest {
     // given
     private final Long userId = 1L;
     private final String email = "test@test.com";
-    private final String role = "USER";
+    private final UserRoleType role = UserRoleType.STUDENT;
 
     private JwtProvider jwtProvider;
 
@@ -41,12 +42,7 @@ class JwtProviderTest {
 
         assertEquals(String.valueOf(userId), claims.getSubject());
         assertEquals(email, claims.get("email"));
-        assertEquals(role, claims.get("role"));
-
-        System.out.println("token: " + token);
-        System.out.println("userId : " + claims.getSubject());
-        System.out.println("email : " + claims.get("email"));
-        System.out.println("role : " + claims.get("role"));
+        assertEquals(role, UserRoleType.valueOf((String) claims.get("role")));
     }
 
     @Test
@@ -63,11 +59,6 @@ class JwtProviderTest {
 
         assertEquals(String.valueOf(userId), claims.getSubject());
         assertEquals(email, claims.get("email"));
-        assertEquals(role, claims.get("role"));
-
-        System.out.println("token: " + token);
-        System.out.println("userId : " + claims.getSubject());
-        System.out.println("email : " + claims.get("email"));
-        System.out.println("role : " + claims.get("role"));
+        assertEquals(role, UserRoleType.valueOf((String) claims.get("role")));
     }
 }

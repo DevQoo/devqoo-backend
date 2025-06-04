@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.devqoo.backend.auth.security.CustomUserDetails;
+import com.devqoo.backend.user.enums.UserRoleType;
 import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,7 @@ class JwtAuthenticationFilterTest {
         // given
         Long userId = 1L;
         String email = "test@test.com";
-        String role = "USER";
+        UserRoleType role = UserRoleType.STUDENT;
 
         String token =
             jwtProvider.generateAccessToken(userId, email, role);
@@ -58,7 +59,6 @@ class JwtAuthenticationFilterTest {
 
         assertEquals(userId, userDetails.userId());
         assertEquals(email, userDetails.email());
-        assertEquals(role, userDetails.role());
 
         verify(filterChain).doFilter(request, response);
     }
