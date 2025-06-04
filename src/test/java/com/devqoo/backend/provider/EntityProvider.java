@@ -4,32 +4,25 @@ import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.comment.entity.Comment;
 import com.devqoo.backend.post.entity.Post;
 import com.devqoo.backend.user.entity.User;
-import com.devqoo.backend.user.enums.UserRoleType;
 import java.lang.reflect.Field;
 
 public abstract class EntityProvider {
 
     public static Category createCategory(String name) {
-        return new Category(name);
+        Category category = new Category(name);
+        return category;
     }
 
-    public static User createUser() {
-        return User.builder()
-            .email("email")
-            .password("password")
-            .nickname("nickname")
-            .profileUrl("profileUrl")
-            .role(UserRoleType.STUDENT)
-            .build();
-    }
 
     public static Post createPost(User user, Category category) {
-        return Post.builder()
+        Post post = Post.builder()
             .title("제목")
             .content("내용")
             .category(category)
             .user(user)
             .build();
+        setId(post, 1L, "postId");
+        return post;
     }
 
     public static Comment createComment(Post post, User user, String content) {
