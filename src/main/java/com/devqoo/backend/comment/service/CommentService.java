@@ -29,7 +29,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public CommentCursorResult getComment(Long postId, LocalDateTime after, int size) {
         LocalDateTime cursor = (after != null) ? after : LocalDateTime.of(1970, 1, 1, 0, 0);
-        List<CommentResponseDto> comments = commentRepository.findCommentsByCursor(postId, after, size).stream()
+        List<CommentResponseDto> comments = commentRepository.findCommentsByCursor(postId, cursor, size).stream()
             .map(CommentResponseDto::from)
             .toList();
         return CommentCursorResult.from(comments, size);
