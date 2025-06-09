@@ -1,17 +1,24 @@
 package com.devqoo.backend.comment.controller;
 
 import com.devqoo.backend.comment.dto.form.RegisterCommentForm;
-import com.devqoo.backend.comment.dto.response.CommentResponseDto;
+import com.devqoo.backend.comment.dto.response.CommentCursorResult;
 import com.devqoo.backend.common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Comment", description = "댓글 관련 API 입니다.")
 public interface CommentApiDocs {
 
     @Operation(summary = "댓글 목록 조회", description = "댓글 목록을 조회합니다.")
-    ResponseEntity<CommonResponse<CommentResponseDto>> getComments();
+    ResponseEntity<CommonResponse<CommentCursorResult>> getComments(
+        @RequestParam Long postId,
+        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime after,
+        @RequestParam(defaultValue = "10") int size
+    );
 
     @Operation(summary = "댓글 생성", description = "댓글을 생성합니다.")
     ResponseEntity<CommonResponse<Long>> createComment(RegisterCommentForm form);
