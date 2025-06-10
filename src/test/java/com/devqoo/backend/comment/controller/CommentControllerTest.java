@@ -2,6 +2,7 @@ package com.devqoo.backend.comment.controller;
 
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -69,7 +70,6 @@ class CommentControllerTest {
 
             given(commentService.createComment(any(RegisterCommentForm.class)))
                 .willReturn(comment);
-
             // when
             mockMvc.perform(
                     post("/api/comments")
@@ -144,5 +144,44 @@ class CommentControllerTest {
                     jsonPath("$.errorMessageList[0]").value(ErrorCode.POST_NOT_FOUND.getMessage())
                 );
         }
+
+        @Nested
+        @DisplayName("댓글 수정")
+        class UpdateComment {
+
+            @DisplayName("PATCH - 댓글 수정 성공")
+            @Test
+            void update_comment() throws Exception {
+                Long commentId = 1L;
+                RegisterCommentForm form = new RegisterCommentForm(1L, 1L, "Updated content");
+                String body = objectMapper.writeValueAsString(form);
+
+                mockMvc.perform(
+                        patch("/api/comments/{commentId}", commentId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(body)
+                    ).andDo(print())
+                    .andExpectAll(status().isNoContent());
+            }
+        }
+
+        @DisplayName("PATCH - 댓글 수정 실패, validation 실패")
+        @ParameterizedTest
+        @MethodSource("provideInvalidCommentForms")
+        void fail_update_comment_Invalid_Request(Long authorId, Long postId, String content) throws Exception {
+            // given
+            Long commentId = 1L;
+            RegisterCommentForm form = new RegisterCommentForm(authorId, postId, content);
+            String json = objectMapper.writeValueAsString(form);
+
+            // when
+            mockMvc.perform(
+                    patch("/api/comments/{commentId}", commentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                ).andDo(print())
+                .andExpect(status().isBadRequest());
+        }
+
     }
 }

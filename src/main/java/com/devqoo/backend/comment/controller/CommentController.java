@@ -42,8 +42,12 @@ public class CommentController implements CommentApiDocs {
 
     @Override
     @PatchMapping("/{commentId}")
-    public ResponseEntity<CommonResponse<Long>> updateComment(@PathVariable Long commentId, RegisterCommentForm form) {
-        return null;
+    public ResponseEntity<CommonResponse<Long>> updateComment(
+        @PathVariable Long commentId,
+        @Valid @RequestBody RegisterCommentForm form
+    ) {
+        commentService.updateComment(commentId, form);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
