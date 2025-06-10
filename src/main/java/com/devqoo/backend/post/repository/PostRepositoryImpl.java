@@ -29,13 +29,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
         // 검색 조건
         if (keyword != null && !keyword.isBlank()) {
-            String type = (searchType == null || searchType.isBlank()) ? "title_content" : searchType;
+            String type = (searchType == null || searchType.isBlank()) ? "title" : searchType;
 
             log.debug("==========> type: {} and keywork: {}", type, keyword);
             switch (type) {
                 case "title" -> condition.and(post.title.containsIgnoreCase(keyword));
                 case "content" -> condition.and(post.content.containsIgnoreCase(keyword));
-                case "titleContent" -> condition.and(
+                case "title_content" -> condition.and(
                     post.title.containsIgnoreCase(keyword)
                         .or(post.content.containsIgnoreCase(keyword))
                 );
@@ -84,3 +84,4 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
             .fetch();
     }
 }
+
