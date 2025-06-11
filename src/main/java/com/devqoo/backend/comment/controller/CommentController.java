@@ -6,9 +6,7 @@ import com.devqoo.backend.comment.entity.Comment;
 import com.devqoo.backend.comment.service.CommentService;
 import com.devqoo.backend.common.response.CommonResponse;
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,10 +30,10 @@ public class CommentController implements CommentApiDocs {
     @GetMapping
     public ResponseEntity<CommonResponse<CommentCursorResult>> getComments(
         @RequestParam Long postId,
-        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime after,
+        @RequestParam(required = false) Long cursor,
         @RequestParam(defaultValue = "10") int size
     ) {
-        CommentCursorResult comments = commentService.getComment(postId, after, size);
+        CommentCursorResult comments = commentService.getComment(postId, cursor, size);
         return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), comments));
     }
 

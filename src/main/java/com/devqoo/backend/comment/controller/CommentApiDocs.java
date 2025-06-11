@@ -5,8 +5,6 @@ import com.devqoo.backend.comment.dto.response.CommentCursorResult;
 import com.devqoo.backend.common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.LocalDateTime;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,7 +14,7 @@ public interface CommentApiDocs {
     @Operation(summary = "댓글 목록 조회", description = "댓글 목록을 조회합니다.")
     ResponseEntity<CommonResponse<CommentCursorResult>> getComments(
         @RequestParam Long postId,
-        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime after,
+        @RequestParam(required = false) Long cursor,
         @RequestParam(defaultValue = "10") int size
     );
 

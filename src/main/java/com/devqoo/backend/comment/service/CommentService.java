@@ -11,7 +11,6 @@ import com.devqoo.backend.post.entity.Post;
 import com.devqoo.backend.post.repository.PostRepository;
 import com.devqoo.backend.user.entity.User;
 import com.devqoo.backend.user.repository.UserRepository;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,8 +26,8 @@ public class CommentService {
 
     // 댓글 목록 조회
     @Transactional(readOnly = true)
-    public CommentCursorResult getComment(Long postId, LocalDateTime after, int size) {
-        LocalDateTime cursor = (after != null) ? after : LocalDateTime.of(1970, 1, 1, 0, 0);
+    public CommentCursorResult getComment(Long postId, Long cursor, int size) {
+
         List<CommentResponseDto> comments = commentRepository.findCommentsByCursor(postId, cursor, size).stream()
             .map(CommentResponseDto::from)
             .toList();
