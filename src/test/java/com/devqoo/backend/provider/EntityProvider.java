@@ -5,14 +5,15 @@ import com.devqoo.backend.comment.entity.Comment;
 import com.devqoo.backend.post.entity.Post;
 import com.devqoo.backend.user.entity.User;
 import java.lang.reflect.Field;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public abstract class EntityProvider {
 
     public static Category createCategory(String name) {
         Category category = new Category(name);
+        ReflectionTestUtils.setField(category, "categoryId", 1L);
         return category;
     }
-
 
     public static Post createPost(User user, Category category) {
         Post post = Post.builder()
@@ -21,7 +22,7 @@ public abstract class EntityProvider {
             .category(category)
             .user(user)
             .build();
-        setId(post, 1L, "postId");
+        ReflectionTestUtils.setField(post, "postId", 1L);
         return post;
     }
 
@@ -31,7 +32,7 @@ public abstract class EntityProvider {
             .author(user)
             .content(content)
             .build();
-        setId(comment, 1L, "commentId");
+        ReflectionTestUtils.setField(comment, "commentId", 1L);
         return comment;
     }
 

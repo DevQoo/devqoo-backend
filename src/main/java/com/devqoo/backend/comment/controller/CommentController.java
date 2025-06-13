@@ -1,7 +1,7 @@
 package com.devqoo.backend.comment.controller;
 
 import com.devqoo.backend.comment.dto.form.RegisterCommentForm;
-import com.devqoo.backend.comment.dto.response.CommentResponseDto;
+import com.devqoo.backend.comment.dto.response.CommentCursorResult;
 import com.devqoo.backend.comment.entity.Comment;
 import com.devqoo.backend.comment.service.CommentService;
 import com.devqoo.backend.common.response.CommonResponse;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,8 +28,13 @@ public class CommentController implements CommentApiDocs {
 
     @Override
     @GetMapping
-    public ResponseEntity<CommonResponse<CommentResponseDto>> getComments() {
-        return null;
+    public ResponseEntity<CommonResponse<CommentCursorResult>> getComments(
+        @RequestParam Long postId,
+        @RequestParam(required = false) Long cursor,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        CommentCursorResult comments = commentService.getComment(postId, cursor, size);
+        return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), comments));
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.post.entity.Post;
 import com.devqoo.backend.user.entity.User;
 import java.lang.reflect.Field;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public abstract class PostFixture {
 
@@ -28,7 +29,8 @@ public abstract class PostFixture {
             .category(category)
             .user(user)
             .build();
-        return setId(post, postId, "postId");
+        ReflectionTestUtils.setField(post, "postId", postId);
+        return post;
     }
 
     public static <T> T setId(T entity, Long id, String fieldName) {
