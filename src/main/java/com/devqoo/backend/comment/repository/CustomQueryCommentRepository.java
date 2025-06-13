@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface CustomQueryCommentRepository {
 
-    List<Comment> findCommentsByCursor(Long postId, Long after, int size);
+    List<Comment> findCommentsByCursor(Long postId, Long cursorId, int size);
 
 }

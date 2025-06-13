@@ -19,8 +19,8 @@ public class CustomQueryCommentRepositoryImpl implements CustomQueryCommentRepos
             .join(comment.author).fetchJoin()
             .where(
                 comment.post.postId.eq(postId),
-                cursorId != null ? comment.commentId.lt(cursorId) : null)
-            .orderBy(comment.createdAt.asc())
+                cursorId != null ? comment.commentId.gt(cursorId) : null)
+            .orderBy(comment.commentId.asc())
             .limit(size + 1)
             .fetch();
     }
