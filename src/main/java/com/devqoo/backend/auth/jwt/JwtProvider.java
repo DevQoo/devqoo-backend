@@ -12,6 +12,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +22,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
 public class JwtProvider {
@@ -72,24 +72,8 @@ public class JwtProvider {
     }
 
     // Token 유효 확인
-    public boolean validateToken(String token, SecretKeyType secretKeyType) {
-
-        try {
-            if (!StringUtils.hasText(token)) {
-                return false;
-            }
-
-            Claims claims = parseClaims(token, secretKeyType);
-
-            if (claims == null) {
-                return false;
-            }
-
-            return !claims.getExpiration().before(new Date());
-
-        } catch (Exception ex) {
-            return false;
-        }
+    public void validateToken(String token, SecretKeyType secretKeyType) {
+         parseClaims(token, secretKeyType);
     }
 
     // JWT 토큰에서 사용자 정보를 추출하여 Spring Security 의 Authentication 객체로 변환
@@ -106,6 +90,14 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(
             customUserDetails, "", List.of(new SimpleGrantedAuthority(role))
         );
+    }
+
+    // 토큰의 남은 시간 추출
+    public Long getRemainingTime(String token, SecretKeyType secretKeyType) {
+
+        Claims claims = parseClaims(token, secretKeyType);
+
+        return Math.max(Duration.between(Instant.now(), claims.getExpiration().toInstant()).getSeconds(), 0);
     }
 
     // Claims 의 정보 확인

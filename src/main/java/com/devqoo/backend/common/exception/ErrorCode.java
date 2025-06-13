@@ -14,6 +14,7 @@ public enum ErrorCode {
     JWT_MALFORMED(HttpStatus.BAD_REQUEST, "잘못된 형식의 토큰입니다."),
     JWT_UNSUPPORTED(HttpStatus.BAD_REQUEST, "지원하지 않는 구조의 토큰입니다."),
     JWT_IllegalArgument(HttpStatus.BAD_REQUEST, "토큰이 비어 있거나 잘못되었습니다."),
+    JWT_BLACKLIST(HttpStatus.UNAUTHORIZED, "블랙리스트 처리되어 사용할 수 없습니다."),
 
     // ======== 공통 오류 =========
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "입력값이 유효하지 않습니다."),

@@ -1,5 +1,6 @@
 package com.devqoo.backend.common.config;
 
+import com.devqoo.backend.auth.jwt.JwtAuthenticationEntryPoint;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,7 @@ public class SecurityConfig {
     private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) throws Exception {
 
         http
             // csrf 설정
@@ -34,6 +35,10 @@ public class SecurityConfig {
                 authorizeRequests -> authorizeRequests
                     .anyRequest().permitAll()
             )
+            // exception
+            . exceptionHandling(
+                exception -> exception
+                    .authenticationEntryPoint(jwtAuthenticationEntryPoint))
         ;
 
         return http.build();

@@ -3,7 +3,9 @@ package com.devqoo.backend.auth.service;
 import com.devqoo.backend.auth.dto.form.SignInForm;
 import com.devqoo.backend.auth.dto.response.TokenResponseDto;
 import com.devqoo.backend.auth.jwt.JwtProvider;
+import com.devqoo.backend.auth.jwt.SecretKeyType;
 import com.devqoo.backend.auth.repository.AuthRepository;
+import com.devqoo.backend.auth.security.CustomUserDetails;
 import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.common.exception.ErrorCode;
 import com.devqoo.backend.user.entity.User;
@@ -40,7 +42,7 @@ public class AuthService {
 
         try {
             authRepository.saveRefreshToken(user.getUserId(), refreshToken, refreshExpireTime);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             throw new BusinessException(ErrorCode.REDIS_EXCEPTION);
         }
 
@@ -48,5 +50,19 @@ public class AuthService {
             jwtProvider.generateAccessToken(user.getUserId(), user.getEmail(), user.getRole());
 
         return new TokenResponseDto(accessToken, refreshToken, refreshExpireTime);
+    }
+
+    // 로그아웃
+    @Transactional(readOnly = true)
+    public void logout(String token, CustomUserDetails customUserDetails) {
+
+        Long remainingTime = jwtProvider.getRemainingTime(token, SecretKeyType.ACCESS);
+
+        try {
+            authRepository.saveBlackList(token, remainingTime);
+            authRepository.removeRefreshToken(customUserDetails.userId());
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.REDIS_EXCEPTION);
+        }
     }
 }

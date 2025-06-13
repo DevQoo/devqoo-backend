@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.devqoo.backend.auth.repository.AuthRepository;
 import com.devqoo.backend.auth.security.CustomUserDetails;
 import com.devqoo.backend.user.enums.UserRoleType;
 import jakarta.servlet.FilterChain;
@@ -13,11 +14,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.PathMatcher;
 
 class JwtAuthenticationFilterTest {
 
     private JwtProvider jwtProvider;
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private AuthRepository authRepository;
 
     @BeforeEach
     void setUp() {
@@ -27,8 +30,12 @@ class JwtAuthenticationFilterTest {
         int accessExpireTime = 300000;
         int refreshExpireTime = 330000;
 
+        authRepository = mock(AuthRepository.class);
         jwtProvider = new JwtProvider(accessKey, refreshKey, accessExpireTime, refreshExpireTime);
-        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtProvider);
+        PathMatcher pathMatcher = mock(PathMatcher.class);
+
+        jwtAuthenticationFilter =
+            new JwtAuthenticationFilter(jwtProvider, new TokenExtractor(), authRepository, pathMatcher);
 
         SecurityContextHolder.clearContext();
     }
