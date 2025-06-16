@@ -2,7 +2,7 @@ package com.devqoo.backend.provider;
 
 import com.devqoo.backend.user.entity.User;
 import com.devqoo.backend.user.enums.UserRoleType;
-import java.lang.reflect.Field;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public abstract class UserFixture {
 
@@ -24,17 +24,8 @@ public abstract class UserFixture {
             .profileUrl(profileUrl)
             .role(UserRoleType.STUDENT)
             .build();
-        return setId(user, userId, USER_ID_FIELD_NAME);
+        ReflectionTestUtils.setField(user, USER_ID_FIELD_NAME, userId);
+        return user;
     }
 
-    public static <T> T setId(T entity, Long id, String fieldName) {
-        try {
-            Field field = entity.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(entity, id);
-        } catch (Exception e) {
-            throw new RuntimeException("ID 주입 실패", e);
-        }
-        return entity;
-    }
 }
