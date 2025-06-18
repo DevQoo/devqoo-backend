@@ -1,7 +1,17 @@
 package com.devqoo.backend.post.service;
 
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.BDDMockito.given;
+
 import com.devqoo.backend.category.entity.Category;
 import com.devqoo.backend.category.repository.CategoryRepository;
+import com.devqoo.backend.comment.repository.CommentRepository;
 import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.common.exception.ErrorCode;
 import com.devqoo.backend.post.dto.form.PostForm;
@@ -9,13 +19,15 @@ import com.devqoo.backend.post.dto.response.CursorPageResponse;
 import com.devqoo.backend.post.dto.response.PostResponseDto;
 import com.devqoo.backend.post.entity.Post;
 import com.devqoo.backend.post.enums.PostSortField;
-import com.devqoo.backend.post.enums.SortDirection;
 import com.devqoo.backend.post.repository.PostRepository;
 import com.devqoo.backend.provider.EntityProvider;
 import com.devqoo.backend.provider.PostFixture;
 import com.devqoo.backend.provider.UserFixture;
 import com.devqoo.backend.user.entity.User;
 import com.devqoo.backend.user.repository.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,17 +35,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenThrownBy;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +46,8 @@ class PostServiceTest {
     private CategoryRepository categoryRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private CommentRepository commentRepository;
 
     @InjectMocks
     private PostService postService;
@@ -79,8 +82,8 @@ class PostServiceTest {
 
         // when && then
         thenThrownBy(() -> postService.createPost(form))
-                .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.CATEGORY_NOT_FOUND.getMessage());
+            .isInstanceOf(BusinessException.class)
+            .hasMessage(ErrorCode.CATEGORY_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -93,8 +96,8 @@ class PostServiceTest {
 
         // when && then
         thenThrownBy(() -> postService.createPost(form))
-                .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.USER_NOT_FOUND.getMessage());
+            .isInstanceOf(BusinessException.class)
+            .hasMessage(ErrorCode.USER_NOT_FOUND.getMessage());
     }
 
     @Nested
@@ -110,7 +113,7 @@ class PostServiceTest {
             given(userRepository.existsById(anyLong())).willReturn(true);
             given(categoryRepository.existsById(anyLong())).willReturn(true);
             given(postRepository.findPostForUpdate(anyLong(), anyLong(), anyLong()))
-                    .willReturn(Optional.of(post));
+                .willReturn(Optional.of(post));
 
             // when
             Long result = postService.updatePost(postId, form);
@@ -130,8 +133,8 @@ class PostServiceTest {
 
             // when && then
             thenThrownBy(() -> postService.updatePost(1L, form))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage(ErrorCode.USER_NOT_FOUND.getMessage());
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.USER_NOT_FOUND.getMessage());
         }
 
         @Test
@@ -144,8 +147,8 @@ class PostServiceTest {
 
             // when && then
             thenThrownBy(() -> postService.updatePost(1L, form))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage(ErrorCode.CATEGORY_NOT_FOUND.getMessage());
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.CATEGORY_NOT_FOUND.getMessage());
         }
 
         @Test
@@ -156,12 +159,12 @@ class PostServiceTest {
             given(userRepository.existsById(anyLong())).willReturn(true);
             given(categoryRepository.existsById(anyLong())).willReturn(true);
             given(postRepository.findPostForUpdate(anyLong(), anyLong(), anyLong()))
-                    .willReturn(Optional.empty());
+                .willReturn(Optional.empty());
 
             // when && then
             thenThrownBy(() -> postService.updatePost(1L, form))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage(ErrorCode.POST_NOT_FOUND.getMessage());
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.POST_NOT_FOUND.getMessage());
         }
     }
 
@@ -187,8 +190,8 @@ class PostServiceTest {
 
         // when && then
         thenThrownBy(() -> postService.deletePost(1L))
-                .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.POST_NOT_FOUND.getMessage());
+            .isInstanceOf(BusinessException.class)
+            .hasMessage(ErrorCode.POST_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -214,8 +217,8 @@ class PostServiceTest {
 
         // when && then
         thenThrownBy(() -> postService.getPostDetail(1L))
-                .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.POST_NOT_FOUND.getMessage());
+            .isInstanceOf(BusinessException.class)
+            .hasMessage(ErrorCode.POST_NOT_FOUND.getMessage());
     }
 
     @Nested
@@ -230,23 +233,39 @@ class PostServiceTest {
             Post post3 = PostFixture.createPost(3L);
 
             given(postRepository.searchPostsByCursor(
-                    eq("제목"), // keyword
-                    eq("title"), // searchType
-                    eq(PostSortField.POST_ID), // 정렬 필드
-                    eq(SortDirection.DESC),    // 정렬 방향
-                    eq(2L),   // lastPostId
-                    eq(0),    // lastViewCount
-                    eq(3)     // size
+                eq("제목"), // keyword
+                eq("title"), // searchType
+                eq(PostSortField.POST_ID), // 정렬 필드
+                eq(2L),   // lastPostId
+                eq(3)     // size
             )).willReturn(new ArrayList<>(List.of(post1, post2, post3)));
+
+            // 댓글 수 mock
+            given(commentRepository.countCommentsByPostIds(List.of(1L, 2L)))
+                .willReturn(List.of(
+                    new Object[]{1L, 2L},
+                    new Object[]{2L, 0L}
+                ));
 
             // when
             CursorPageResponse<PostResponseDto> page = postService.getPostsByCursor(
-                    "제목", "title", PostSortField.POST_ID, SortDirection.DESC, 2L, 0, 2);
+                "제목", "title", PostSortField.POST_ID, 2L, 2);
+
 
             // then
             then(page.hasNext()).isTrue();
             then(page.nextPostId()).isEqualTo(post2.getPostId());
             then(page.content()).hasSize(2);
+
+            // then 댓글 수
+            PostResponseDto dto1 = page.content().get(0);
+            PostResponseDto dto2 = page.content().get(1);
+
+            then(dto1.postId()).isEqualTo(1L);
+            then(dto1.commentCount()).isEqualTo(2L);
+
+            then(dto2.postId()).isEqualTo(2L);
+            then(dto2.commentCount()).isEqualTo(0L);
         }
 
         @Test
@@ -255,23 +274,32 @@ class PostServiceTest {
             // given
             Post post1 = PostFixture.createPost(1L);
             given(postRepository.searchPostsByCursor(
-                    isNull(),
-                    isNull(),
-                    eq(PostSortField.POST_ID),
-                    eq(SortDirection.DESC),
-                    isNull(),
-                    eq(0),
-                    eq(2)
+                isNull(),
+                isNull(),
+                eq(PostSortField.POST_ID),
+                isNull(),
+                eq(2)
             )).willReturn(new ArrayList<>(List.of(post1)));
+
+            List<Object[]> commentCounts = new ArrayList<>();
+            commentCounts.add(new Object[]{1L, 3L});
+
+            given(commentRepository.countCommentsByPostIds(anyList()))
+                .willReturn(commentCounts);
 
             // when
             CursorPageResponse<PostResponseDto> page = postService.getPostsByCursor(
-                    null, null, PostSortField.POST_ID, SortDirection.DESC, null, 0, 1);
+                null, null, PostSortField.POST_ID, null, 1);
 
             // then
             then(page.hasNext()).isFalse();
             then(page.nextPostId()).isEqualTo(post1.getPostId());
             then(page.content()).hasSize(1);
+
+            // then 댓글 수
+            PostResponseDto dto = page.content().get(0);
+            then(dto.postId()).isEqualTo(1L);
+            then(dto.commentCount()).isEqualTo(3L);
         }
     }
 }
