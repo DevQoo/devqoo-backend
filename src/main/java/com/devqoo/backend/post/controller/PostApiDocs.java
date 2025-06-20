@@ -5,7 +5,6 @@ import com.devqoo.backend.post.dto.form.PostForm;
 import com.devqoo.backend.post.dto.response.CursorPageResponse;
 import com.devqoo.backend.post.dto.response.PostResponseDto;
 import com.devqoo.backend.post.enums.PostSortField;
-import com.devqoo.backend.post.enums.SortDirection;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -39,9 +38,7 @@ public interface PostApiDocs {
         @RequestParam(required = false) String keyword,
         @RequestParam(required = false, defaultValue = "title_content") String searchType,
         @RequestParam(defaultValue = "POST_ID") PostSortField sortField,
-        @RequestParam(defaultValue = "DESC") SortDirection direction,
         @RequestParam(required = false) Long lastPostId,
-        @RequestParam(defaultValue = "-1") int lastViewCount,
         @RequestParam(defaultValue = "10") int size
     );
 }

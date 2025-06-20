@@ -5,22 +5,13 @@ import com.devqoo.backend.post.dto.form.PostForm;
 import com.devqoo.backend.post.dto.response.CursorPageResponse;
 import com.devqoo.backend.post.dto.response.PostResponseDto;
 import com.devqoo.backend.post.enums.PostSortField;
-import com.devqoo.backend.post.enums.SortDirection;
 import com.devqoo.backend.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -38,18 +29,18 @@ public class PostController implements PostApiDocs {
         Long postId = postService.createPost(postForm);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(CommonResponse.success(HttpStatus.CREATED.value(), postId));
+                .body(CommonResponse.success(HttpStatus.CREATED.value(), postId));
     }
 
     // 게시글 수정
     @PutMapping("/{postId}")
     public ResponseEntity<CommonResponse<Long>> updatePost(@PathVariable Long postId,
-        @RequestBody @Valid PostForm postForm) {
+                                                           @RequestBody @Valid PostForm postForm) {
 
         Long updatePostId = postService.updatePost(postId, postForm);
 
         return ResponseEntity.status(HttpStatus.OK)
-            .body(CommonResponse.success(HttpStatus.OK.value(), updatePostId));
+                .body(CommonResponse.success(HttpStatus.OK.value(), updatePostId));
     }
 
     // 게시글 삭제
@@ -68,27 +59,23 @@ public class PostController implements PostApiDocs {
         PostResponseDto postDto = postService.getPostDetail(postId);
 
         return ResponseEntity.status(HttpStatus.OK)
-            .body(CommonResponse.success(HttpStatus.OK.value(), postDto));
+                .body(CommonResponse.success(HttpStatus.OK.value(), postDto));
     }
 
     // 게시글 조회 + 검색
     @GetMapping
     public ResponseEntity<CommonResponse<CursorPageResponse<PostResponseDto>>> getPostsByCursor(
-        @RequestParam(required = false) String keyword,
-        @RequestParam(required = false, defaultValue = "title") String searchType,
-        @RequestParam(defaultValue = "POST_ID") PostSortField sortField,
-        @RequestParam(defaultValue = "DESC") SortDirection direction,
-        @RequestParam(required = false) Long lastPostId,
-        @RequestParam(defaultValue = "-1") int lastViewCount,
-        @RequestParam(defaultValue = "10") int size
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "title") String searchType,
+            @RequestParam(defaultValue = "POST_ID") PostSortField sortField,
+            @RequestParam(required = false) Long lastPostId,
+            @RequestParam(defaultValue = "10") int size
     ) {
 
         CursorPageResponse<PostResponseDto> response = postService.getPostsByCursor(
-            keyword, searchType, sortField, direction,
-            lastPostId, lastViewCount, size
-        );
+                keyword, searchType, sortField, lastPostId, size);
 
         return ResponseEntity.status(HttpStatus.OK)
-            .body(CommonResponse.success(HttpStatus.OK.value(), response));
+                .body(CommonResponse.success(HttpStatus.OK.value(), response));
     }
 }

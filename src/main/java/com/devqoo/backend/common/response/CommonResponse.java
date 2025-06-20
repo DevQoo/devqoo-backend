@@ -2,10 +2,11 @@ package com.devqoo.backend.common.response;
 
 import com.devqoo.backend.common.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
