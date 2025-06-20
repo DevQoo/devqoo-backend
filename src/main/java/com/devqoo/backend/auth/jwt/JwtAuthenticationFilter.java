@@ -30,7 +30,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String[] API = {
         "/api/users",   // 회원가입
-        "/api/auth"     // 로그인
+        "/api/auth",     // 로그인
+        "/swagger-ui/**",   // swagger
+        "/api-docs/**",
+        "/swagger-resources/**",
+        "/webjars/**",
+        "/configuration/**"
     };
 
     @Override

@@ -4,6 +4,7 @@ import com.devqoo.backend.post.entity.Post;
 import com.devqoo.backend.post.entity.QPost;
 import com.devqoo.backend.post.enums.PostSortField;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -30,7 +31,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
             .selectFrom(post)
             .where(condition)
             .orderBy(sortField.getOrderSpecifiers(post)
-                .toArray(new com.querydsl.core.types.OrderSpecifier[0]))
+                .toArray(new OrderSpecifier[0]))
             .limit(size)
             .fetch();
     }
