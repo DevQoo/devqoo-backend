@@ -78,4 +78,11 @@ public class PostController implements PostApiDocs {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.success(HttpStatus.OK.value(), response));
     }
+
+    // 게시글 조회수 증가
+    @PostMapping("/{postId}/views")
+    public ResponseEntity<CommonResponse<Void>> increaseViewCount(@PathVariable Long postId) {
+        postService.increaseViewCount(postId);
+        return ResponseEntity.ok(CommonResponse.success(HttpStatus.OK.value(), null));
+    }
 }

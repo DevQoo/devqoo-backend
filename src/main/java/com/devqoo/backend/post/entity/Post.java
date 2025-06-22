@@ -69,4 +69,9 @@ public class Post extends BaseTimeEntity {
     public void updateContent(String content) {
         this.content = content;
     }
+
+    // 조회수 증가
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
 }
