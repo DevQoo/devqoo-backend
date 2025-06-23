@@ -302,4 +302,31 @@ class PostServiceTest {
             then(dto.commentCount()).isEqualTo(3L);
         }
     }
+
+    @Test
+    @DisplayName("increaseViewCount: 게시글 조회수 증가")
+    void increaseViewCount() {
+        // given
+        Long postId = 1L;
+        Post post = PostFixture.createPost(postId, user, category, "title", "content");
+        given(postRepository.findById(postId)).willReturn(Optional.of(post));
+
+        // when
+        postService.increaseViewCount(postId);
+
+        // then
+        then(post.getViewCount()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("increaseViewCount: 게시글이 없으면 예외 발생")
+    void increaseViewCount_postNotFound() {
+        // given
+        given(postRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when & then
+        thenThrownBy(() -> postService.increaseViewCount(1L))
+            .isInstanceOf(BusinessException.class)
+            .hasMessage(ErrorCode.POST_NOT_FOUND.getMessage());
+    }
 }

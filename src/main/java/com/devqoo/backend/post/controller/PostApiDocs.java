@@ -41,4 +41,8 @@ public interface PostApiDocs {
         @RequestParam(required = false) Long lastPostId,
         @RequestParam(defaultValue = "10") int size
     );
+
+    // 게시글 조회수 증가
+    @Operation(summary = "게시글 조회수 증가", description = "해당 게시글의 조회수를 증가시킵니다.")
+    ResponseEntity<CommonResponse<Void>> increaseViewCount(@PathVariable Long postId);
 }

@@ -148,4 +148,14 @@ public class PostService {
 
         return CursorPageResponse.of(content, nextPostId, hasNext);
     }
+
+    // 게시글 조회수 증가
+    @Transactional
+    public void increaseViewCount(Long postId) {
+        Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(POST_NOT_FOUND));
+
+        // post 엔티티에서 처리
+        post.increaseViewCount();
+    }
 }
