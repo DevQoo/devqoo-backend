@@ -35,6 +35,7 @@ public class UserController implements UserApiDocs {
             .body(CommonResponse.success(HttpStatus.CREATED.value(), null));
     }
 
+    // 닉네임 변경
     @Override
     @PatchMapping("/{userId}/nickname")
     public ResponseEntity<CommonResponse<UserResponseDto>> updateUserNickname(
