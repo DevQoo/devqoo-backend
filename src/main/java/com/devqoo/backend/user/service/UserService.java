@@ -5,7 +5,9 @@ import static com.devqoo.backend.common.exception.ErrorCode.NICKNAME_ALREADY_EXI
 import static com.devqoo.backend.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.devqoo.backend.common.exception.BusinessException;
+import com.devqoo.backend.user.dto.form.NicknameUpdateForm;
 import com.devqoo.backend.user.dto.form.SignUpForm;
+import com.devqoo.backend.user.dto.response.UserResponseDto;
 import com.devqoo.backend.user.entity.User;
 import com.devqoo.backend.user.enums.UserRoleType;
 import com.devqoo.backend.user.repository.UserRepository;
@@ -66,5 +68,20 @@ public class UserService {
         if (userRepository.existsByNickname(nickname)) {
             throw new BusinessException(NICKNAME_ALREADY_EXISTS);
         }
+    }
+
+    // 닉네임 수정
+    @Transactional
+    public UserResponseDto updateUserNickname(Long userId, NicknameUpdateForm nicknameUpdateForm) {
+
+        // 닉네임 중복 체크
+        String nickname = nicknameUpdateForm.nickname();
+        validateNickname(nickname);
+
+        // userId 체크
+        User user = this.findById(userId);
+        user.updateNickname(nickname);
+
+        return UserResponseDto.from(user);
     }
 }

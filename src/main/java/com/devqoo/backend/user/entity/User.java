@@ -53,4 +53,9 @@ public class User extends BaseTimeEntity {
         this.profileUrl = profileUrl;
         this.role = role;
     }
+
+    // 닉네임 수정
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
