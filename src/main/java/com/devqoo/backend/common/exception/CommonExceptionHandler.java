@@ -12,6 +12,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -131,6 +132,15 @@ public class CommonExceptionHandler {
         ErrorCode errorCode = exception.getErrorCode();
         return ResponseEntity
             .status(errorCode.getHttpStatusCode())
+            .body(CommonResponse.error(errorCode));
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<CommonResponse<Void>> handleAuthorizationDeniedException(
+        AuthorizationDeniedException exception) {
+        ErrorCode errorCode = ErrorCode.USER_UNAUTHORIZED;
+        return ResponseEntity
+            .status(errorCode.getHttpStatus())
             .body(CommonResponse.error(errorCode));
     }
 }
