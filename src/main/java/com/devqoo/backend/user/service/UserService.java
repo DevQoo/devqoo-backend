@@ -1,11 +1,13 @@
 package com.devqoo.backend.user.service;
 
 import static com.devqoo.backend.common.exception.ErrorCode.EMAIL_ALREADY_EXISTS;
+import static com.devqoo.backend.common.exception.ErrorCode.INVALID_ORIGIN_PASSWORD;
 import static com.devqoo.backend.common.exception.ErrorCode.NICKNAME_ALREADY_EXISTS;
 import static com.devqoo.backend.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.user.dto.form.NicknameUpdateForm;
+import com.devqoo.backend.user.dto.form.PasswordUpdateForm;
 import com.devqoo.backend.user.dto.form.SignUpForm;
 import com.devqoo.backend.user.dto.response.UserResponseDto;
 import com.devqoo.backend.user.entity.User;
@@ -44,10 +46,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    /*
-     * 조회 (userId 기준)
-     * 존재 하지 않으면 BusinessException 발생
-     * */
+    // userId 체크
     @Transactional(readOnly = true)
     public User findById(Long userId) {
         return userRepository.findById(userId)
@@ -83,5 +82,21 @@ public class UserService {
         user.updateNickname(nickname);
 
         return UserResponseDto.from(user);
+    }
+
+    // 비밀번호 변경
+    @Transactional
+    public void updateUserPassword(Long userId, PasswordUpdateForm passwordUpdateForm) {
+
+        // userId 체크
+        User user = this.findById(userId);
+
+        // origin 비밀번호 확인
+        if (!passwordEncoder.matches(passwordUpdateForm.originPassword(), user.getPassword())) {
+            throw new BusinessException(INVALID_ORIGIN_PASSWORD);
+        }
+
+        // 비밀번호 변경
+        user.updatePassword(passwordEncoder.encode(passwordUpdateForm.password()));
     }
 }
