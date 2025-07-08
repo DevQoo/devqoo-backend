@@ -6,6 +6,12 @@ import java.util.List;
 
 public interface PostRepositoryCustom {
 
+    List<Post> searchMyPostsByCursor (
+        Long userId,
+        Long lastPostId,
+        int size
+    );
+
     List<Post> searchPostsByCursor(
         String keyword,
         String searchType,

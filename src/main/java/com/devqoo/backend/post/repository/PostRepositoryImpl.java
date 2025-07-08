@@ -19,6 +19,25 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     private static final QPost post = QPost.post;
 
 
+    // 나의 게시글 조회
+    @Override
+    public List<Post> searchMyPostsByCursor(Long userId, Long lastPostId, int size) {
+
+        BooleanBuilder condition = new BooleanBuilder().and(post.user.userId.eq(userId));
+
+        if (lastPostId != null) {
+            condition.and(post.postId.lt(lastPostId));
+        }
+
+        return jpaQueryFactory
+            .selectFrom(post)
+            .where(condition)
+            .orderBy(post.postId.desc())
+            .limit(size)
+            .fetch();
+    }
+
+    // 게시글 조회
     @Override
     public List<Post> searchPostsByCursor(String keyword, String searchType, PostSortField sortField,
         Long lastPostId, int size) {
