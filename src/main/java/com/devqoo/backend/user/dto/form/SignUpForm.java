@@ -1,5 +1,6 @@
 package com.devqoo.backend.user.dto.form;
 
+import com.devqoo.backend.user.validation.PasswordConfirmable;
 import com.devqoo.backend.user.validation.PasswordMatches;
 import com.devqoo.backend.user.validation.PasswordPolicy;
 import jakarta.validation.constraints.Email;
@@ -23,6 +24,6 @@ public record SignUpForm(
     String password,
 
     String passwordConfirm
-) {
+) implements PasswordConfirmable {
 
 }

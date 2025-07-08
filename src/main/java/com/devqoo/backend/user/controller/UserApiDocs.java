@@ -2,6 +2,7 @@ package com.devqoo.backend.user.controller;
 
 import com.devqoo.backend.common.response.CommonResponse;
 import com.devqoo.backend.user.dto.form.NicknameUpdateForm;
+import com.devqoo.backend.user.dto.form.PasswordUpdateForm;
 import com.devqoo.backend.user.dto.form.SignUpForm;
 import com.devqoo.backend.user.dto.response.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,4 +24,10 @@ public interface UserApiDocs {
     ResponseEntity<CommonResponse<UserResponseDto>> updateUserNickname(
         @PathVariable Long userId,
         @RequestBody @Valid NicknameUpdateForm nicknameUpdateForm);
+
+    // 비밀번호 변경
+    @Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
+    ResponseEntity<CommonResponse<Void>> updateUserPassword(
+        @PathVariable Long userId,
+        @RequestBody @Valid PasswordUpdateForm passwordUpdateForm);
 }

@@ -2,6 +2,7 @@ package com.devqoo.backend.user.controller;
 
 import com.devqoo.backend.common.response.CommonResponse;
 import com.devqoo.backend.user.dto.form.NicknameUpdateForm;
+import com.devqoo.backend.user.dto.form.PasswordUpdateForm;
 import com.devqoo.backend.user.dto.form.SignUpForm;
 import com.devqoo.backend.user.dto.response.UserResponseDto;
 import com.devqoo.backend.user.service.UserService;
@@ -45,5 +46,17 @@ public class UserController implements UserApiDocs {
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(CommonResponse.success(HttpStatus.OK.value(), userResponseDto));
+    }
+
+    // 비밀번호 변경
+    @Override
+    @PatchMapping("/{userId}/password")
+    public ResponseEntity<CommonResponse<Void>> updateUserPassword(
+        @PathVariable Long userId, @RequestBody @Valid PasswordUpdateForm passwordUpdateForm) {
+
+        userService.updateUserPassword(userId, passwordUpdateForm);
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(CommonResponse.success(HttpStatus.OK.value(), null));
     }
 }
