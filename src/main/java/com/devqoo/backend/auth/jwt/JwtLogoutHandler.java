@@ -13,13 +13,15 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 public class JwtLogoutHandler implements LogoutHandler {
 
     private final JwtService jwtService;
+    private final TokenExtractor tokenExtractor;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         resolveRefreshToken(request)
             .ifPresent(refreshToken -> {
-                // DB에 저장한 리프레시 토큰 무효화
-                jwtService.invalidateJwtToken(refreshToken);
+                // DB에 저장한 리프레시 토큰 무효화, AccessToken 은 블랙리스트에 저장
+                String accessToken = tokenExtractor.extractJwtFromHeader(request);
+                jwtService.invalidateJwtToken(accessToken, refreshToken);
                 // 쿠키에서 리프레시 토큰 제거
                 invalidateRefreshTokenCookie(response);
             });

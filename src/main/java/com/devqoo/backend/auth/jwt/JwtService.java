@@ -34,11 +34,11 @@ public class JwtService {
     }
 
     // 토큰 무효화
-    public void invalidateJwtToken(String token) {
-        Long remainingTime = jwtProvider.getRemainingTime(token, SecretKeyType.ACCESS);
-        UserDto userDto = jwtProvider.parseUserDto(token, SecretKeyType.REFRESH);
+    public void invalidateJwtToken(String accessToken, String refreshToken) {
+        Long remainingTime = jwtProvider.getRemainingTime(accessToken, SecretKeyType.ACCESS);
+        UserDto userDto = jwtProvider.parseUserDto(refreshToken, SecretKeyType.REFRESH);
         try {
-            authRepository.saveBlackList(token, remainingTime);
+            authRepository.saveBlackList(accessToken, remainingTime);
             authRepository.removeRefreshToken(userDto.userId());
         } catch (Exception e) {
             throw new BusinessException(ErrorCode.REDIS_EXCEPTION);
