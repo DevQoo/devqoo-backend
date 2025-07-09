@@ -6,6 +6,7 @@ import com.devqoo.backend.auth.jwt.JwtLoginSuccessHandler;
 import com.devqoo.backend.auth.jwt.JwtLogoutHandler;
 import com.devqoo.backend.auth.jwt.JwtProvider;
 import com.devqoo.backend.auth.jwt.JwtService;
+import com.devqoo.backend.auth.jwt.TokenExtractor;
 import com.devqoo.backend.auth.repository.AuthRepository;
 import com.devqoo.backend.auth.security.CustomLoginFailureHandler;
 import com.devqoo.backend.auth.security.JsonUsernamePasswordAuthenticationFilter;
@@ -50,7 +51,8 @@ public class SecurityConfig {
         ObjectMapper objectMapper,
         JwtService jwtService,
         JwtProvider jwtProvider,
-        AuthRepository authRepository
+        AuthRepository authRepository,
+        TokenExtractor tokenExtractor
     ) throws Exception {
 
         http
@@ -68,7 +70,7 @@ public class SecurityConfig {
                 logout
                     .logoutRequestMatcher(SecurityMatchers.LOGOUT)
                     .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
-                    .addLogoutHandler(new JwtLogoutHandler(jwtService))
+                    .addLogoutHandler(new JwtLogoutHandler(jwtService, tokenExtractor))
             )
             .with(
                 new JsonUsernamePasswordAuthenticationFilter.Configurer(objectMapper),
