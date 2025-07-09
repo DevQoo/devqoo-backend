@@ -1,7 +1,7 @@
 package com.devqoo.backend.auth.jwt;
 
 import com.devqoo.backend.auth.dto.response.TokenResponseDto;
-import com.devqoo.backend.auth.security.CustomUserDetails2;
+import com.devqoo.backend.auth.security.CustomUserDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -22,7 +22,7 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        CustomUserDetails2 principal = (CustomUserDetails2) authentication.getPrincipal();
+        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         // JWT 토큰 발급
         TokenResponseDto tokenResponseDto = jwtService.registerJwtToken(principal.userDto());
 

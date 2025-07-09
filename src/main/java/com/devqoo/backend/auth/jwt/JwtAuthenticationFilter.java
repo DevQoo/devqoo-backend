@@ -1,7 +1,7 @@
 package com.devqoo.backend.auth.jwt;
 
 import com.devqoo.backend.auth.repository.AuthRepository;
-import com.devqoo.backend.auth.security.CustomUserDetails2;
+import com.devqoo.backend.auth.security.CustomUserDetails;
 import com.devqoo.backend.auth.security.SecurityMatchers;
 import com.devqoo.backend.common.exception.ErrorCode;
 import com.devqoo.backend.common.response.CommonResponse;
@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     !authRepository.isAccessTokenBlackList(accessToken)
             ) {
                 UserDto userDto = jwtTProvider.parseUserDto(accessToken, SecretKeyType.ACCESS);
-                CustomUserDetails2 userDetails = new CustomUserDetails2(userDto, null);
+                CustomUserDetails userDetails = new CustomUserDetails(userDto, null);
                 UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 // 인증 정보 시큐리티 컨텍스트 저장
