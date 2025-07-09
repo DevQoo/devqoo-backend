@@ -1,10 +1,9 @@
 package com.devqoo.backend.user.validation;
 
-import com.devqoo.backend.user.dto.form.SignUpForm;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, SignUpForm> {
+public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, PasswordConfirmable> {
 
     private String message;
     private String fieldName;
@@ -17,10 +16,10 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
     }
 
     @Override
-    public boolean isValid(SignUpForm signUpForm, ConstraintValidatorContext context) {
+    public boolean isValid(PasswordConfirmable passwordConfirmable, ConstraintValidatorContext context) {
 
-        String password = signUpForm.password();
-        String passwordConfirm = signUpForm.passwordConfirm();
+        String password = passwordConfirmable.password();
+        String passwordConfirm = passwordConfirmable.passwordConfirm();
 
         if (password.equals(passwordConfirm)) {
             return true;
