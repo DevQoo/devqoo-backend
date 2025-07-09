@@ -71,7 +71,7 @@ public class UserController implements UserApiDocs {
     public ResponseEntity<CommonResponse<CursorPageResponse<PostResponseDto>>> getMyPosts(
         @Auth CustomUserDetails customUserDetails,
         @RequestParam(required = false) Long lastPostId,
-        @RequestParam(defaultValue = "5") int size
+        @RequestParam(defaultValue = "10") int size
     ) {
 
         CursorPageResponse<PostResponseDto> response =
