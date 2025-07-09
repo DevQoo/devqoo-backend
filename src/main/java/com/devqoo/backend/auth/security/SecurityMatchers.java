@@ -16,7 +16,7 @@ public abstract class SecurityMatchers {
 
     // 로그인
     public static final RequestMatcher LOGIN =
-        new AntPathRequestMatcher("/api/login", HttpMethod.POST.name());
+        new AntPathRequestMatcher("/api/auth/login", HttpMethod.POST.name());
 
     // 로그아웃
     public static final RequestMatcher LOGOUT =
@@ -24,7 +24,7 @@ public abstract class SecurityMatchers {
 
     public static final String LOGIN_URL = "/api/auth/login";
 
-    public static final RequestMatcher[] PERMIT_URI =
+    public static final RequestMatcher[] PUBLIC_MATCHERS =
         new RequestMatcher[]{
             SIGN_UP, LOGIN, LOGOUT, NON_API
         };

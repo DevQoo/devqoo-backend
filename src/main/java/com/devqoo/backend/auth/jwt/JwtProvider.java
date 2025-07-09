@@ -1,8 +1,8 @@
 package com.devqoo.backend.auth.jwt;
 
-import com.devqoo.backend.auth.security.CustomUserDetails;
 import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.common.exception.ErrorCode;
+import com.devqoo.backend.user.dto.response.UserDto;
 import com.devqoo.backend.user.enums.UserRoleType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -15,14 +15,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
 import javax.crypto.SecretKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class JwtProvider {
 
@@ -48,9 +46,17 @@ public class JwtProvider {
         return createToken(userId, email, role, accessExpireTime, accessKey);
     }
 
+    public String generateAccessToken(UserDto userDto) {
+        return createToken(userDto, refreshExpireTime, accessKey);
+    }
+
     // Refresh Token 발급
     public String generateRefreshToken(Long userId, String email, UserRoleType role) {
         return createToken(userId, email, role, refreshExpireTime, refreshKey);
+    }
+
+    public String generateRefreshToken(UserDto userDto) {
+        return createToken(userDto, refreshExpireTime, refreshKey);
     }
 
     // Token 생성
@@ -71,25 +77,34 @@ public class JwtProvider {
             .compact();
     }
 
-    // Token 유효 확인
-    public void validateToken(String token, SecretKeyType secretKeyType) {
-         parseClaims(token, secretKeyType);
+    private String createToken(
+        UserDto userDto, int expireTime, SecretKey secretKey
+    ) {
+        Instant now = Instant.now();
+        Instant expiration = now.plusSeconds(expireTime);
+
+        return Jwts.builder()
+            .subject(userDto.userId().toString())
+            .claim("email", userDto.email())
+            .claim("role", userDto.role())
+            .claim("userDto", userDto)
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(expiration))
+            .signWith(secretKey)
+            .compact();
     }
 
-    // JWT 토큰에서 사용자 정보를 추출하여 Spring Security 의 Authentication 객체로 변환
-    public Authentication getAuthentication(String token, SecretKeyType secretKeyType) {
-
-        Claims claims = parseClaims(token, secretKeyType);
-
-        Long userId = Long.parseLong(claims.getSubject());
-        String email = claims.get("email", String.class);
-        String role = claims.get("role", String.class);
-
-        CustomUserDetails customUserDetails = new CustomUserDetails(userId, email, role);
-
-        return new UsernamePasswordAuthenticationToken(
-            customUserDetails, "", List.of(new SimpleGrantedAuthority(role))
-        );
+    // Token 유효 확인
+    public boolean validateToken(String token, SecretKeyType secretKeyType) {
+        boolean verified;
+        try {
+            parseClaims(token, secretKeyType);
+            verified = true;
+        } catch (BusinessException exception) {
+            log.error(exception.getMessage());
+            verified = false;
+        }
+        return verified;
     }
 
     // 토큰의 남은 시간 추출
@@ -98,6 +113,11 @@ public class JwtProvider {
         Claims claims = parseClaims(token, secretKeyType);
 
         return Math.max(Duration.between(Instant.now(), claims.getExpiration().toInstant()).getSeconds(), 0);
+    }
+
+    public UserDto parseUserDto(String token, SecretKeyType secretKeyType) {
+        Claims claims = parseClaims(token, secretKeyType);
+        return claims.get("userDto", UserDto.class);
     }
 
     // Claims 의 정보 확인
