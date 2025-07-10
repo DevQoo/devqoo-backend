@@ -24,7 +24,11 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException, ServletException {
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         // JWT 토큰 발급
-        TokenResponseDto tokenResponseDto = jwtService.registerJwtToken(principal.userDto());
+        TokenResponseDto tokenResponseDto = jwtService.registerJwtToken(
+            principal.userId(),
+            principal.email(),
+            principal.role()
+        );
 
         // 헤더 쿠키에는 리프레시 토큰
         Cookie refreshTokenCookie = new Cookie(JwtService.REFRESH_TOKEN_COOKIE_NAME, tokenResponseDto.refreshToken());

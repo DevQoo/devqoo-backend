@@ -2,7 +2,6 @@ package com.devqoo.backend.auth.jwt;
 
 import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.common.exception.ErrorCode;
-import com.devqoo.backend.user.dto.response.UserDto;
 import com.devqoo.backend.user.enums.UserRoleType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -46,17 +45,28 @@ public class JwtProvider {
         return createToken(userId, email, role, accessExpireTime, accessKey);
     }
 
-    public String generateAccessToken(UserDto userDto) {
-        return createToken(userDto, refreshExpireTime, accessKey);
-    }
-
     // Refresh Token 발급
     public String generateRefreshToken(Long userId, String email, UserRoleType role) {
         return createToken(userId, email, role, refreshExpireTime, refreshKey);
     }
 
-    public String generateRefreshToken(UserDto userDto) {
-        return createToken(userDto, refreshExpireTime, refreshKey);
+    public Long getUserId(String token) {
+        Claims claims = parseClaims(token, SecretKeyType.ACCESS);
+        try {
+            return Long.parseLong(claims.getSubject());
+        } catch (NumberFormatException e) {
+            throw new BusinessException(ErrorCode.JWT_IllegalArgument);
+        }
+    }
+
+    public UserRoleType getUserRole(String token) {
+        Claims claims = parseClaims(token, SecretKeyType.ACCESS);
+        return claims.get("role", UserRoleType.class);
+    }
+
+    public String getUserEmail(String token) {
+        Claims claims = parseClaims(token, SecretKeyType.ACCESS);
+        return claims.get("email", String.class);
     }
 
     // Token 생성
@@ -71,23 +81,6 @@ public class JwtProvider {
             .subject(userId.toString())
             .claim("email", email)
             .claim("role", role)
-            .issuedAt(Date.from(now))
-            .expiration(Date.from(expiration))
-            .signWith(secretKey)
-            .compact();
-    }
-
-    private String createToken(
-        UserDto userDto, int expireTime, SecretKey secretKey
-    ) {
-        Instant now = Instant.now();
-        Instant expiration = now.plusSeconds(expireTime);
-
-        return Jwts.builder()
-            .subject(userDto.userId().toString())
-            .claim("email", userDto.email())
-            .claim("role", userDto.role())
-            .claim("userDto", userDto)
             .issuedAt(Date.from(now))
             .expiration(Date.from(expiration))
             .signWith(secretKey)
@@ -113,11 +106,6 @@ public class JwtProvider {
         Claims claims = parseClaims(token, secretKeyType);
 
         return Math.max(Duration.between(Instant.now(), claims.getExpiration().toInstant()).getSeconds(), 0);
-    }
-
-    public UserDto parseUserDto(String token, SecretKeyType secretKeyType) {
-        Claims claims = parseClaims(token, secretKeyType);
-        return claims.get("userDto", UserDto.class);
     }
 
     // Claims 의 정보 확인

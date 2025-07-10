@@ -5,7 +5,7 @@ import com.devqoo.backend.auth.security.CustomUserDetails;
 import com.devqoo.backend.auth.security.SecurityMatchers;
 import com.devqoo.backend.common.exception.ErrorCode;
 import com.devqoo.backend.common.response.CommonResponse;
-import com.devqoo.backend.user.dto.response.UserDto;
+import com.devqoo.backend.user.enums.UserRoleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String PREFIX = "Bearer ";
 
     private final ObjectMapper objectMapper;
-    private final JwtProvider jwtTProvider;
+    private final JwtProvider jwtProvider;
     private final AuthRepository authRepository;
 
     @Override
@@ -47,11 +47,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String accessToken = optionalAccessToken.get();
             // 토큰이 유효한지 검사: 유효하지 않다면 response에 응답 데이터 담아서 반환합니다.
             if (
-                jwtTProvider.validateToken(accessToken, SecretKeyType.ACCESS) &&
+                jwtProvider.validateToken(accessToken, SecretKeyType.ACCESS) &&
                     !authRepository.isAccessTokenBlackList(accessToken)
             ) {
-                UserDto userDto = jwtTProvider.parseUserDto(accessToken, SecretKeyType.ACCESS);
-                CustomUserDetails userDetails = new CustomUserDetails(userDto, null);
+                Long userId = jwtProvider.getUserId(accessToken);
+                String email = jwtProvider.getUserEmail(accessToken);
+                UserRoleType role = jwtProvider.getUserRole(accessToken);
+                CustomUserDetails userDetails = new CustomUserDetails(userId, role, email, null);
                 UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 // 인증 정보 시큐리티 컨텍스트 저장

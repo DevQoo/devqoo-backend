@@ -1,17 +1,22 @@
 package com.devqoo.backend.auth.security;
 
-import com.devqoo.backend.user.dto.response.UserDto;
+import com.devqoo.backend.user.enums.UserRoleType;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public record CustomUserDetails(UserDto userDto, String password) implements UserDetails {
+public record CustomUserDetails(
+    Long userId,
+    UserRoleType role,
+    String email,
+    String password
+) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_".concat(userDto.role().name())));
+        return List.of(new SimpleGrantedAuthority("ROLE_".concat(role.name())));
     }
 
     @Override
@@ -21,10 +26,10 @@ public record CustomUserDetails(UserDto userDto, String password) implements Use
 
     @Override
     public String getUsername() {
-        return userDto.nickname();
+        return email;
     }
 
     public Long userId() {
-        return userDto.userId();
+        return userId;
     }
 }

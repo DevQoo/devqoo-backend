@@ -4,7 +4,7 @@ import com.devqoo.backend.auth.dto.response.TokenResponseDto;
 import com.devqoo.backend.auth.repository.AuthRepository;
 import com.devqoo.backend.common.exception.BusinessException;
 import com.devqoo.backend.common.exception.ErrorCode;
-import com.devqoo.backend.user.dto.response.UserDto;
+import com.devqoo.backend.user.enums.UserRoleType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,24 +22,24 @@ public class JwtService {
     @Value("${JWT_REFRESH_TIME}")
     private int refreshExpireTime;
 
-    public TokenResponseDto registerJwtToken(UserDto userDto) {
-        String refreshToken = jwtProvider.generateRefreshToken(userDto);
+    public TokenResponseDto registerJwtToken(Long userId, String email, UserRoleType role) {
+        String refreshToken = jwtProvider.generateRefreshToken(userId, email, role);
         try {
-            authRepository.saveRefreshToken(userDto.userId(), refreshToken, refreshExpireTime);
+            authRepository.saveRefreshToken(userId, refreshToken, refreshExpireTime);
         } catch (Exception ex) {
             throw new BusinessException(ErrorCode.REDIS_EXCEPTION);
         }
-        String accessToken = jwtProvider.generateAccessToken(userDto);
+        String accessToken = jwtProvider.generateAccessToken(userId, email, role);
         return new TokenResponseDto(accessToken, refreshToken, refreshExpireTime);
     }
 
     // 토큰 무효화
     public void invalidateJwtToken(String accessToken, String refreshToken) {
         Long remainingTime = jwtProvider.getRemainingTime(accessToken, SecretKeyType.ACCESS);
-        UserDto userDto = jwtProvider.parseUserDto(refreshToken, SecretKeyType.REFRESH);
+        Long userId = jwtProvider.getUserId(refreshToken);
         try {
             authRepository.saveBlackList(accessToken, remainingTime);
-            authRepository.removeRefreshToken(userDto.userId());
+            authRepository.removeRefreshToken(userId);
         } catch (Exception e) {
             throw new BusinessException(ErrorCode.REDIS_EXCEPTION);
         }

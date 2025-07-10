@@ -1,6 +1,5 @@
 package com.devqoo.backend.auth.security;
 
-import com.devqoo.backend.user.dto.response.UserDto;
 import com.devqoo.backend.user.entity.User;
 import com.devqoo.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException(email));
-        UserDto userDto = UserDto.from(user);
-        return new CustomUserDetails(userDto, user.getPassword());
+        return new CustomUserDetails(user.getUserId(), user.getRole(), user.getEmail(), user.getPassword());
     }
 }
