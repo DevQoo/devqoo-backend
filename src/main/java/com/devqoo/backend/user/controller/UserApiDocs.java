@@ -1,8 +1,12 @@
 package com.devqoo.backend.user.controller;
 
+import com.devqoo.backend.auth.jwt.Auth;
+import com.devqoo.backend.auth.security.CustomUserDetails;
 import com.devqoo.backend.common.response.CommonResponse;
 import com.devqoo.backend.user.dto.form.NicknameUpdateForm;
 import com.devqoo.backend.user.dto.form.PasswordUpdateForm;
+import com.devqoo.backend.post.dto.response.CursorPageResponse;
+import com.devqoo.backend.post.dto.response.PostResponseDto;
 import com.devqoo.backend.user.dto.form.SignUpForm;
 import com.devqoo.backend.user.dto.response.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "User", description = "사용자 관련 API 입니다.")
 public interface UserApiDocs {
@@ -30,4 +35,11 @@ public interface UserApiDocs {
     ResponseEntity<CommonResponse<Void>> updateUserPassword(
         @PathVariable Long userId,
         @RequestBody @Valid PasswordUpdateForm passwordUpdateForm);
+
+    // 내 게시글 목록
+    @Operation(summary = "내 댓글 목록", description = "내가 작성한 댓글 목록을 조회합니다.")
+    ResponseEntity<CommonResponse<CursorPageResponse<PostResponseDto>>> getMyPosts(
+        @Auth CustomUserDetails customUserDetails,
+        @RequestParam(required = false) Long lastPostId,
+        @RequestParam(defaultValue = "10") int size);
 }

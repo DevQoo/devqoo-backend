@@ -1,6 +1,10 @@
 package com.devqoo.backend.user.controller;
 
+import com.devqoo.backend.auth.jwt.Auth;
+import com.devqoo.backend.auth.security.CustomUserDetails;
 import com.devqoo.backend.common.response.CommonResponse;
+import com.devqoo.backend.post.dto.response.CursorPageResponse;
+import com.devqoo.backend.post.dto.response.PostResponseDto;
 import com.devqoo.backend.user.dto.form.NicknameUpdateForm;
 import com.devqoo.backend.user.dto.form.PasswordUpdateForm;
 import com.devqoo.backend.user.dto.form.SignUpForm;
@@ -10,11 +14,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -58,5 +64,20 @@ public class UserController implements UserApiDocs {
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(CommonResponse.success(HttpStatus.OK.value(), null));
+    }
+
+    // 내 게시글 목록
+    @GetMapping("/comments")
+    public ResponseEntity<CommonResponse<CursorPageResponse<PostResponseDto>>> getMyPosts(
+        @Auth CustomUserDetails customUserDetails,
+        @RequestParam(required = false) Long lastPostId,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+
+        CursorPageResponse<PostResponseDto> response =
+            userService.getMyPosts(customUserDetails.userId(), lastPostId, size);
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(CommonResponse.success(HttpStatus.OK.value(), response));
     }
 }
