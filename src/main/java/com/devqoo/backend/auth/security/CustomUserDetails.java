@@ -29,7 +29,4 @@ public record CustomUserDetails(
         return email;
     }
 
-    public Long userId() {
-        return userId;
-    }
 }
