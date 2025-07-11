@@ -61,12 +61,12 @@ public class AuthController implements AuthAipDocs {
 
         ResponseCookie cookie =
             ResponseCookie.from("refreshToken", refreshToken)
-            .httpOnly(true)
-            .secure(false) // HTTPS 진행시 true 로 변경
-            .path("/")
-            .maxAge(0)
-            .sameSite("Strict") // CSRF 공격 방지용
-            .build();
+                .httpOnly(true)
+                .secure(false) // HTTPS 진행시 true 로 변경
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict") // CSRF 공격 방지용
+                .build();
 
         return ResponseEntity.status(HttpStatus.OK)
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
